@@ -1,0 +1,438 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Macoco's Lobby</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;700;900&family=Cinzel:wght@400;700;900&family=Sawarabi+Mincho&display=swap" rel="stylesheet">
+
+  <style>
+    :root {
+      --bg: #0a0704;
+      --paper: rgba(18, 12, 8, 0.92);
+      --neon-red:    #ff2020;
+      --neon-gold:   #ffcc00;
+      --neon-amber:  #ff8800;
+      --neon-jade:   #00e87a;
+      --neon-sakura: #ff4fa3;
+      --neon-ink:    #e8d9c0;
+      --dim: #6b5a4a;
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    html, body { min-height: 100vh; }
+
+    body {
+      background-color: var(--bg);
+      font-family: 'Noto Serif JP', serif;
+      color: var(--neon-ink);
+      overflow-x: hidden;
+      position: relative;
+    }
+
+    /* Ink wash radials */
+    body::after {
+      content: '';
+      position: fixed; inset: 0; z-index: 0;
+      background:
+        radial-gradient(ellipse 70% 55% at 15% 15%, rgba(255,32,32,0.09) 0%, transparent 65%),
+        radial-gradient(ellipse 55% 45% at 85% 75%, rgba(255,204,0,0.08) 0%, transparent 60%),
+        radial-gradient(ellipse 80% 30% at 50% 100%, rgba(180,20,0,0.12) 0%, transparent 55%);
+      pointer-events: none;
+    }
+
+    /* Large kanji background watermark */
+    .mon-bg {
+      position: fixed;
+      top: 50%; left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 420px;
+      line-height: 1;
+      opacity: 0.022;
+      color: var(--neon-gold);
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+      font-family: 'Sawarabi Mincho', serif;
+    }
+
+    /* Falling petals */
+    .petals { position: fixed; inset: 0; pointer-events: none; z-index: 1; overflow: hidden; }
+    .petal {
+      position: absolute; top: -20px;
+      border-radius: 0 70% 0 70%;
+      opacity: 0;
+      animation: sakura-fall linear infinite;
+    }
+    @keyframes sakura-fall {
+      0%   { transform: translateY(0) rotate(0deg) translateX(0);   opacity: 0; }
+      8%   { opacity: 0.7; }
+      85%  { opacity: 0.3; }
+      100% { transform: translateY(108vh) rotate(600deg) translateX(40px); opacity: 0; }
+    }
+
+    /* ── Header ── */
+    header {
+      position: relative; z-index: 10;
+      text-align: center;
+      padding: 52px 20px 28px;
+    }
+
+    .torii { display: block; margin: 0 auto 18px; opacity: 0.6; }
+
+    .header-jp {
+      font-family: 'Sawarabi Mincho', serif;
+      font-size: 13px;
+      letter-spacing: 10px;
+      color: var(--neon-red);
+      text-shadow: 0 0 14px var(--neon-red);
+      margin-bottom: 10px;
+    }
+
+    header h1 {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(2rem, 5vw, 4rem);
+      font-weight: 900;
+      letter-spacing: 8px;
+      text-transform: uppercase;
+      color: #fff;
+      text-shadow:
+        0 0 16px var(--neon-gold),
+        0 0 50px rgba(255,204,0,0.35),
+        0 0 100px rgba(255,204,0,0.12);
+    }
+
+    .header-divider {
+      display: flex; align-items: center; justify-content: center;
+      gap: 14px; margin: 16px auto; width: fit-content;
+    }
+    .header-divider .line {
+      display: block; width: 80px; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--neon-gold));
+    }
+    .header-divider .line:last-child {
+      background: linear-gradient(90deg, var(--neon-gold), transparent);
+    }
+    .header-kamon {
+      color: var(--neon-gold); font-size: 14px;
+      text-shadow: 0 0 10px var(--neon-gold);
+    }
+
+    .header-sub {
+      font-size: 10px; letter-spacing: 5px; color: var(--dim);
+    }
+
+    /* ── Dashboard ── */
+    .dashboard {
+      position: relative; z-index: 10;
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      gap: 28px;
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 20px 28px 72px;
+    }
+
+    /* ── Card ── */
+    .section-card {
+      background: var(--paper);
+      border: 1px solid rgba(255,255,255,0.06);
+      border-radius: 4px;
+      position: relative;
+      overflow: hidden;
+      transition: border-color 0.4s, box-shadow 0.4s;
+    }
+    .section-card::before {
+      content: '';
+      position: absolute; top: 0; left: 0;
+      width: 3px; height: 100%;
+      background: var(--section-neon);
+      box-shadow: 0 0 18px var(--section-neon), 0 0 40px rgba(0,0,0,0.5);
+      transition: box-shadow 0.4s;
+    }
+    .section-card:hover::before {
+      box-shadow: 0 0 30px var(--section-neon), 0 0 60px var(--section-neon);
+    }
+    .section-card:hover {
+      border-color: rgba(255,255,255,0.12);
+      box-shadow: 0 4px 40px rgba(0,0,0,0.6), 0 0 1px var(--section-neon);
+    }
+
+    /* Corner kanji watermark */
+    .card-kanji-bg {
+      position: absolute; bottom: -10px; right: 8px;
+      font-family: 'Sawarabi Mincho', serif;
+      font-size: 96px; line-height: 1;
+      opacity: 0.035;
+      color: var(--section-neon);
+      pointer-events: none; user-select: none;
+    }
+
+    /* Shoji top strip */
+    .card-top {
+      display: grid; grid-template-columns: repeat(4, 1fr);
+      height: 5px; border-bottom: 1px solid rgba(255,255,255,0.04);
+    }
+    .card-top span { border-right: 1px solid rgba(255,255,255,0.04); }
+    .card-top span:nth-child(2) {
+      background: var(--section-neon); opacity: 0.55;
+      animation: shoji-blink 4s ease-in-out infinite;
+    }
+    @keyframes shoji-blink { 0%,100%{opacity:0.55} 50%{opacity:0.15} }
+
+    .card-inner { padding: 24px 22px 28px 28px; }
+
+    /* Section header */
+    .section-header { display: flex; align-items: baseline; gap: 10px; margin-bottom: 6px; }
+    .section-icon { font-size: 18px; }
+    .section-title {
+      font-family: 'Cinzel', serif;
+      font-size: 15px; font-weight: 700;
+      letter-spacing: 4px; text-transform: uppercase;
+      color: var(--section-neon);
+      text-shadow: 0 0 14px var(--section-neon);
+    }
+    .section-jp {
+      font-family: 'Sawarabi Mincho', serif;
+      font-size: 10px; letter-spacing: 2px;
+      color: var(--dim); margin-left: auto;
+    }
+    .section-rule {
+      height: 1px;
+      background: linear-gradient(90deg, var(--section-neon), transparent);
+      opacity: 0.2; margin: 10px 0 18px;
+    }
+
+    /* Buttons */
+    .btn-list { display: flex; flex-direction: column; gap: 8px; }
+
+    .neon-btn {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 14px 10px 12px;
+      background: transparent;
+      border: none;
+      border-left: 2px solid rgba(255,255,255,0.06);
+      border-radius: 0 6px 6px 0;
+      color: #c9bba8;
+      font-family: 'Noto Serif JP', serif;
+      font-size: 13px; letter-spacing: 0.5px;
+      text-decoration: none; cursor: pointer;
+      position: relative; overflow: hidden;
+      transition: background 0.22s, border-color 0.22s, color 0.22s, box-shadow 0.22s, padding-left 0.18s;
+    }
+
+    /* Ink-brush sweep on hover */
+    .neon-btn::before {
+      content: '';
+      position: absolute; top: 0; left: -110%; width: 55%; height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.05), transparent);
+      transition: left 0.45s ease;
+    }
+    .neon-btn:hover::before { left: 160%; }
+
+    .neon-btn:hover {
+      background: rgba(255,255,255,0.05);
+      border-color: var(--section-neon);
+      color: #fff; padding-left: 18px;
+      box-shadow: inset 3px 0 0 var(--section-neon), 0 0 18px rgba(0,0,0,0.4);
+      text-shadow: 0 0 10px var(--section-neon);
+    }
+    .neon-btn:active {
+      background: rgba(255,255,255,0.09);
+      box-shadow: inset 3px 0 0 var(--section-neon), 0 0 30px var(--section-neon);
+      filter: brightness(1.4);
+    }
+
+    .btn-mon {
+      font-family: 'Sawarabi Mincho', serif;
+      font-size: 10px; min-width: 28px; text-align: center;
+      color: var(--section-neon); opacity: 0.7;
+      transition: opacity 0.2s;
+    }
+    .neon-btn:hover .btn-mon { opacity: 1; }
+    .btn-name { flex: 1; }
+    .btn-arrow {
+      font-size: 9px; color: var(--section-neon);
+      opacity: 0; transition: opacity 0.2s, transform 0.2s;
+      transform: translateX(-4px);
+    }
+    .neon-btn:hover .btn-arrow { opacity: 1; transform: translateX(0); }
+
+    /* Section colors */
+    .dles   { --section-neon: var(--neon-sakura); }
+    .jogos  { --section-neon: var(--neon-jade); }
+    .fights { --section-neon: var(--neon-red); }
+
+    /* Footer */
+    footer {
+      position: relative; z-index: 10;
+      text-align: center; padding: 16px 20px 28px;
+    }
+    .footer-inner {
+      display: inline-flex; align-items: center; gap: 16px;
+      font-size: 10px; letter-spacing: 4px; color: var(--dim);
+    }
+    .footer-inner .kamon {
+      color: var(--neon-gold); font-size: 18px;
+      text-shadow: 0 0 12px var(--neon-gold);
+    }
+  </style>
+</head>
+<body>
+
+  <div class="mon-bg">家</div>
+  <div class="petals" id="petals"></div>
+
+  <header>
+    <!-- Torii gate -->
+    <svg class="torii" width="90" height="54" viewBox="0 0 90 54" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <rect x="16" y="18" width="4" height="36" fill="#ff2020" opacity="0.7"/>
+      <rect x="70" y="18" width="4" height="36" fill="#ff2020" opacity="0.7"/>
+      <rect x="4"  y="8"  width="82" height="6" rx="1" fill="#ff2020" opacity="0.85"/>
+      <rect x="16" y="24" width="58" height="4" rx="1" fill="#ff2020" opacity="0.55"/>
+      <rect x="4"  y="8"  width="82" height="2" rx="1" fill="#ff6060" opacity="0.6"/>
+      <rect x="0"  y="6"  width="10" height="10" rx="1" fill="#ff2020" opacity="0.7"/>
+      <rect x="80" y="6"  width="10" height="10" rx="1" fill="#ff2020" opacity="0.7"/>
+    </svg>
+
+    <p class="header-jp">マ コ コ の ロ ビ ー</p>
+    <h1>Macoco's Lobby</h1>
+    <div class="header-divider">
+      <span class="line"></span>
+      <span class="header-kamon">✦</span>
+      <span class="line"></span>
+    </div>
+    <p class="header-sub">目的地を選んでください &nbsp;·&nbsp; selecione seu destino</p>
+  </header>
+
+  <main class="dashboard">
+
+    <!-- DLE'S -->
+    <section class="section-card dles">
+      <div class="card-top"><span></span><span></span><span></span><span></span></div>
+      <div class="card-kanji-bg">謎</div>
+      <div class="card-inner">
+        <div class="section-header">
+          <span class="section-icon">❓</span>
+          <span class="section-title">Dle's</span>
+          <span class="section-jp">推測ゲーム</span>
+        </div>
+        <div class="section-rule"></div>
+        <div class="btn-list">
+            <a class="neon-btn" href="https://paranordle.com.br/modos" target="_blank"><span class="btn-mon">霊</span><span class="btn-name">Paranordle</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://narutodle.net" target="_blank"><span class="btn-mon">忍</span><span class="btn-name">Narutodle</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://narutodle.org" target="_blank"><span class="btn-mon">忍</span><span class="btn-name">Narutodle 2</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://onepiecedle.net" target="_blank"><span class="btn-mon">海</span><span class="btn-name">Onepiecedle</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://onepiecedle.io" target="_blank"><span class="btn-mon">海</span><span class="btn-name">Onepiecedle 2</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://pokedle.net" target="_blank"><span class="btn-mon">獣</span><span class="btn-name">Pokédle</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://pokedle.com" target="_blank"><span class="btn-mon">獣</span><span class="btn-name">Pokédle 2</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://bleachdle.org" target="_blank"><span class="btn-mon">魂</span><span class="btn-name">Bleachdle</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://jojodle.com" target="_blank"><span class="btn-mon">力</span><span class="btn-name">Jojodle</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://www.brawldle.gg" target="_blank"><span class="btn-mon">闘</span><span class="btn-name">Brawldle</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://www.mcdle.net/pt_br" target="_blank"><span class="btn-mon">鉱</span><span class="btn-name">Minecraftdle</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://www.valdle.gg" target="_blank"><span class="btn-mon">弾</span><span class="btn-name">Valdle</span><span class="btn-arrow">›</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- JOGOS -->
+    <section class="section-card jogos">
+      <div class="card-top"><span></span><span></span><span></span><span></span></div>
+      <div class="card-kanji-bg">遊</div>
+      <div class="card-inner">
+        <div class="section-header">
+          <span class="section-icon">🕹️</span>
+          <span class="section-title">Jogos</span>
+          <span class="section-jp">遊戯</span>
+        </div>
+        <div class="section-rule"></div>
+        <div class="btn-list">
+            <a class="neon-btn" href="https://pokedoku.com" target="_blank"><span class="btn-mon">格</span><span class="btn-name">Pokédoku</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://poki.com/br" target="_blank"><span class="btn-mon">庭</span><span class="btn-name">Poki</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://www.google.com/search?q=snake+game+google" target="_blank"><span class="btn-mon">蛇</span><span class="btn-name">Snake</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://tetr.io" target="_blank"><span class="btn-mon">方</span><span class="btn-name">Tetris</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://totaljerkface.com/happy_wheels.tjf" target="_blank"><span class="btn-mon">輪</span><span class="btn-name">Happy Wheels</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://play.pokemonshowdown.com" target="_blank"><span class="btn-mon">戦</span><span class="btn-name">PokéShowdown</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://jklm.fun" target="_blank"><span class="btn-mon">言</span><span class="btn-name">Word Bomb</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://gn-math.dev" target="_blank"><span class="btn-mon">算</span><span class="btn-name">gn-Math</span><span class="btn-arrow">›</span></a>
+        </div>
+      </div>
+    </section>
+
+    <!-- FIGHTS -->
+    <section class="section-card fights">
+      <div class="card-top"><span></span><span></span><span></span><span></span></div>
+      <div class="card-kanji-bg">戦</div>
+      <div class="card-inner">
+        <div class="section-header">
+          <span class="section-icon">❤️</span>
+          <span class="section-title">Fights</span>
+          <span class="section-jp">決戦</span>
+        </div>
+        <div class="section-rule"></div>
+        <div class="btn-list">
+          <a class="neon-btn" href="https://jcw87.github.io/c2-sans-fight" target="_blank"><span class="btn-mon">骨</span><span class="btn-name">Sans</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://turbowarp.org/669974432" target="_blank"><span class="btn-mon">鱗</span><span class="btn-name">Undyne</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://turbowarp.org/865866763" target="_blank"><span class="btn-mon">花</span><span class="btn-name">Omega Flowey</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://turbowarp.org/614610315" target="_blank"><span class="btn-mon">神</span><span class="btn-name">Asriel Dreemurr</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://turbowarp.org/671171726" target="_blank"><span class="btn-mon">王</span><span class="btn-name">Asgore</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://turbowarp.org/604681896" target="_blank"><span class="btn-mon">女</span><span class="btn-name">Queen</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://turbowarp.org/572344262" target="_blank"><span class="btn-mon">魔</span><span class="btn-name">Spamton NEO</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://turbowarp.org/600739641" target="_blank"><span class="btn-mon">鬼</span><span class="btn-name">Jevil</span><span class="btn-arrow">›</span></a>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <footer>
+    <div class="footer-inner">
+      <span>マ コ コ</span>
+      <span class="kamon">家</span>
+      <span>ロビー</span>
+    </div>
+  </footer>
+
+  <script>
+    // Sakura petals
+    const container = document.getElementById('petals');
+    const petalColors = [
+      'rgba(255,79,163,0.55)', 'rgba(255,120,180,0.45)',
+      'rgba(255,60,60,0.35)',  'rgba(255,180,200,0.40)',
+      'rgba(220,60,140,0.30)',
+    ];
+    for (let i = 0; i < 32; i++) {
+      const p = document.createElement('div');
+      p.className = 'petal';
+      const s = 7 + Math.random() * 9;
+      p.style.cssText = `
+        left:${Math.random()*100}%;
+        width:${s}px; height:${s}px;
+        background:${petalColors[Math.floor(Math.random()*petalColors.length)]};
+        animation-duration:${10+Math.random()*16}s;
+        animation-delay:${-Math.random()*26}s;
+        filter:blur(${Math.random()*1.2}px);
+        box-shadow:0 0 5px rgba(255,79,163,0.4);
+      `;
+      container.appendChild(p);
+    }
+
+    // Gold cursor trail
+    document.addEventListener('mousemove', e => {
+      const d = document.createElement('div');
+      d.style.cssText = `
+        position:fixed;left:${e.clientX}px;top:${e.clientY}px;
+        width:3px;height:3px;border-radius:50%;
+        background:rgba(255,204,0,0.7);
+        box-shadow:0 0 7px rgba(255,204,0,0.9);
+        pointer-events:none;z-index:9999;
+        transition:opacity 0.6s;
+      `;
+      document.body.appendChild(d);
+      setTimeout(() => { d.style.opacity='0'; setTimeout(()=>d.remove(),600); }, 40);
+    });
+  </script>
+</body>
+</html>
