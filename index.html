@@ -271,11 +271,62 @@
     .neon-btn:hover .btn-arrow { opacity: 1; transform: translateX(0); }
 
     /* Section colors — all green tones */
-    .dles      { --section-neon: #00ff91; }   /* aqua-green */
-    .jogos     { --section-neon: #00ff37; }   /* lime */
-    .fights    { --section-neon: #39ff85; }   /* forest neon */
-    .gnmath    { --section-neon: #6fff2e; }   /* bright fresh green */
-    .utilities { --section-neon: #00ff95; }   /* neon cyan — gelo luminoso */
+    .dles      { --section-neon: #00ff91; }
+    .jogos     { --section-neon: #00ff37; }
+    .fights    { --section-neon: #39ff7b; }
+    .gnmath    { --section-neon: #6fff2e; }
+    .utilities { --section-neon: #00ff9d; }
+    .updatelog { --section-neon: #5eff66; }
+
+    /* ── Update Log entries ── */
+    .log-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+    }
+
+    .log-entry {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 13px 10px 13px 4px;
+      border-bottom: 1px solid rgba(168,255,94,0.07);
+      position: relative;
+      transition: background 0.2s;
+    }
+    .log-entry:last-child {
+      border-bottom: none;
+    }
+    .log-entry:hover {
+      background: rgba(168,255,94,0.04);
+    }
+
+    .log-num {
+      font-family: 'Cinzel', serif;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1px;
+      color: var(--section-neon);
+      text-shadow: 0 0 8px var(--section-neon);
+      opacity: 0.7;
+      min-width: 22px;
+      padding-top: 1px;
+      flex-shrink: 0;
+    }
+
+    .log-text {
+      font-family: 'Noto Serif JP', serif;
+      font-size: 13.5px;
+      color: #9ec9ad;
+      line-height: 1.55;
+      letter-spacing: 0.2px;
+    }
+    .log-text em {
+      font-style: normal;
+      color: var(--section-neon);
+      text-shadow: 0 0 8px var(--section-neon);
+      opacity: 0.9;
+    }
 
     /* Footer */
     footer {
@@ -299,7 +350,6 @@
   <div class="leaves" id="leaves"></div>
 
   <header>
-    <!-- Torii gate — red -->
     <svg class="torii" width="90" height="54" viewBox="0 0 90 54" fill="none" xmlns="http://www.w3.org/2000/svg">
       <rect x="16" y="18" width="4" height="36" fill="#ff2020" opacity="0.8"/>
       <rect x="70" y="18" width="4" height="36" fill="#ff2020" opacity="0.8"/>
@@ -452,6 +502,43 @@
       </div>
     </section>
 
+    <!-- UPDATE LOG -->
+    <section class="section-card updatelog">
+      <div class="card-top"><span></span><span></span><span></span><span></span></div>
+      <div class="card-kanji-bg">録</div>
+      <div class="card-inner">
+        <div class="section-header">
+          <span class="section-icon">📋</span>
+          <span class="section-title">Update Log</span>
+          <span class="section-jp">更新記録</span>
+        </div>
+        <div class="section-rule"></div>
+        <span class="log-text">17/04/2026</span>
+        <div class="log-list">
+          <div class="log-entry">
+            <span class="log-num">01</span>
+            <span class="log-text">Novo card exclusivo adicionado: <em>Gn-Math</em>.</span>
+          </div>
+          <div class="log-entry">
+            <span class="log-num">02</span>
+            <span class="log-text">11 novos jogos agora disponíveis na seção.</span>
+          </div>
+          <div class="log-entry">
+            <span class="log-num">03</span>
+            <span class="log-text">Lançamento da aba <em>Utilities</em> com 10 novos itens.</span>
+          </div>
+          <div class="log-entry">
+            <span class="log-num">04</span>
+            <span class="log-text">Remoção do jogo <em>Happy Wheels</em>.</span>
+          </div>
+          <div class="log-entry">
+            <span class="log-num">05</span>
+            <span class="log-text">Adição do setor de <em>Update Logs</em> para acompanhar as novidades do site.</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
   </main>
 
   <footer>
@@ -463,22 +550,17 @@
   </footer>
 
   <script>
-    // Green leaves falling
     const container = document.getElementById('leaves');
 
-    // SVG leaf shapes
     const leafSVGs = [
-      // Simple elliptical leaf
       `<svg xmlns="http://www.w3.org/2000/svg" width="18" height="10" viewBox="0 0 18 10">
         <ellipse cx="9" cy="5" rx="8" ry="4" fill="COLOR" opacity="0.75"/>
         <line x1="1" y1="5" x2="17" y2="5" stroke="STROKE" stroke-width="0.5" opacity="0.5"/>
       </svg>`,
-      // Pointed leaf
       `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="20" viewBox="0 0 14 20">
         <path d="M7 0 C14 6 14 14 7 20 C0 14 0 6 7 0Z" fill="COLOR" opacity="0.7"/>
         <line x1="7" y1="1" x2="7" y2="19" stroke="STROKE" stroke-width="0.6" opacity="0.5"/>
       </svg>`,
-      // Wide leaf
       `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="12" viewBox="0 0 22 12">
         <path d="M0 6 C4 0 18 0 22 6 C18 12 4 12 0 6Z" fill="COLOR" opacity="0.65"/>
         <line x1="0" y1="6" x2="22" y2="6" stroke="STROKE" stroke-width="0.5" opacity="0.4"/>
@@ -512,7 +594,6 @@
       container.appendChild(wrapper);
     }
 
-    // Green cursor trail
     document.addEventListener('mousemove', e => {
       const d = document.createElement('div');
       d.style.cssText = `
