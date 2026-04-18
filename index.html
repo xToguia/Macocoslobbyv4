@@ -139,7 +139,7 @@
     .dashboard {
       position: relative; z-index: 10;
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+      grid-template-columns: repeat(3, 1fr);
       gap: 28px;
       max-width: 1320px;
       margin: 0 auto;
@@ -273,23 +273,73 @@
     /* Section colors — all green tones */
     .dles      { --section-neon: #00ff91; }
     .jogos     { --section-neon: #00ff37; }
-    .fights    { --section-neon: #39ff7b; }
+    .fights    { --section-neon: #39ff39; }
     .gnmath    { --section-neon: #2eff2e; }
-    .utilities { --section-neon: #00ff9d; }
+    .utilities { --section-neon: #00ff80; }
     .updatelog { --section-neon: #5eff66; }
+    .embreve   { --section-neon: #58fd6e; }
 
-    /* ── Update Log entries ── */
-    .log-list {
+    /* ── Em Breve card ── */
+    .embreve-watermark {
+      position: absolute;
+      inset: 0;
       display: flex;
-      flex-direction: column;
-      gap: 0;
+      align-items: center;
+      justify-content: center;
+      pointer-events: none;
+      user-select: none;
+      overflow: hidden;
+    }
+    .embreve-watermark span {
+      font-family: 'Cinzel', serif;
+      font-size: clamp(52px, 7vw, 82px);
+      font-weight: 900;
+      letter-spacing: 14px;
+      text-transform: uppercase;
+      color: var(--section-neon);
+      opacity: 0.08;
+      white-space: nowrap;
+      animation: watermark-pulse 5s ease-in-out infinite;
+    }
+    @keyframes watermark-pulse {
+      0%, 100% { opacity: 0.08; }
+      50%       { opacity: 0.14; }
+    }
+
+    /* ── Update Log full-width ── */
+    .updatelog-wide {
+      grid-column: 1 / -1;
+    }
+
+    .log-list-wide {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 0 24px;
+    }
+
+    .log-header-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .log-date-badge {
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      letter-spacing: 3px;
+      color: var(--section-neon);
+      opacity: 0.6;
+      border: 1px solid rgba(94,255,102,0.18);
+      padding: 3px 10px;
+      border-radius: 2px;
     }
 
     .log-entry {
       display: flex;
       align-items: flex-start;
       gap: 14px;
-      padding: 13px 10px 13px 4px;
+      padding: 11px 10px 11px 4px;
       border-bottom: 1px solid rgba(168,255,94,0.07);
       position: relative;
       transition: background 0.2s;
@@ -328,6 +378,70 @@
       opacity: 0.9;
     }
 
+    /* ── Scroll indicator ── */
+    .scroll-indicator {
+      position: fixed;
+      right: 22px;
+      top: 50%;
+      transform: translateY(-50%);
+      z-index: 100;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      opacity: 1;
+      transition: opacity 0.5s;
+      pointer-events: none;
+    }
+    .scroll-indicator.hidden {
+      opacity: 0;
+    }
+
+    .scroll-track {
+      width: 1px;
+      height: 80px;
+      background: rgba(0,255,100,0.12);
+      border-radius: 1px;
+      position: relative;
+      overflow: hidden;
+    }
+    .scroll-track-fill {
+      position: absolute;
+      top: -100%;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(180deg, transparent, var(--neon-green));
+      animation: scroll-drip 2.2s ease-in-out infinite;
+    }
+    @keyframes scroll-drip {
+      0%   { top: -100%; opacity: 0; }
+      20%  { opacity: 1; }
+      100% { top: 100%; opacity: 0; }
+    }
+
+    .scroll-label {
+      font-family: 'Sawarabi Mincho', serif;
+      font-size: 9px;
+      letter-spacing: 4px;
+      color: var(--neon-green);
+      text-shadow: 0 0 8px var(--neon-green);
+      opacity: 0.55;
+      writing-mode: vertical-rl;
+      text-orientation: mixed;
+    }
+
+    .scroll-arrow {
+      font-size: 11px;
+      color: var(--neon-green);
+      opacity: 0.6;
+      animation: arrow-bounce 1.8s ease-in-out infinite;
+    }
+    @keyframes arrow-bounce {
+      0%, 100% { transform: translateY(0); opacity: 0.6; }
+      50%       { transform: translateY(4px); opacity: 1; }
+    }
+
     /* Footer */
     footer {
       position: relative; z-index: 10;
@@ -341,6 +455,16 @@
       color: var(--neon-green); font-size: 18px;
       text-shadow: 0 0 12px var(--neon-green);
     }
+
+    /* Responsive: collapse to 1 col on small screens */
+    @media (max-width: 700px) {
+      .dashboard { grid-template-columns: 1fr; }
+      .scroll-indicator { display: none; }
+    }
+    @media (max-width: 1000px) and (min-width: 701px) {
+      .dashboard { grid-template-columns: repeat(2, 1fr); }
+      .updatelog-wide { grid-column: 1 / -1; }
+    }
   </style>
 </head>
 <body>
@@ -348,6 +472,15 @@
   <div class="bg-image"></div>
   <div class="mon-bg">家</div>
   <div class="leaves" id="leaves"></div>
+
+  <!-- Scroll Indicator -->
+  <div class="scroll-indicator" id="scrollIndicator">
+    <span class="scroll-label">SCROLL</span>
+    <div class="scroll-track">
+      <div class="scroll-track-fill"></div>
+    </div>
+    <span class="scroll-arrow">▼</span>
+  </div>
 
   <header>
     <svg class="torii" width="90" height="54" viewBox="0 0 90 54" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -384,7 +517,7 @@
         </div>
         <div class="section-rule"></div>
         <div class="btn-list">
-          <a class="neon-btn" href="https://paranordle.com.br/modos" target="_blank"><span class="btn-mon">霊</span><span class="btn-name">Paranordle</span><span class="btn-arrow">›</span></a>
+          <a class="neon-btn" href="https://paranordle.com.br/jogar" target="_blank"><span class="btn-mon">霊</span><span class="btn-name">Paranordle</span><span class="btn-arrow">›</span></a>
           <a class="neon-btn" href="https://narutodle.net" target="_blank"><span class="btn-mon">忍</span><span class="btn-name">Narutodle</span><span class="btn-arrow">›</span></a>
           <a class="neon-btn" href="https://onepiecedle.net" target="_blank"><span class="btn-mon">海</span><span class="btn-name">Onepiecedle</span><span class="btn-arrow">›</span></a>
           <a class="neon-btn" href="https://pokedle.net" target="_blank"><span class="btn-mon">獣</span><span class="btn-name">Pokédle</span><span class="btn-arrow">›</span></a>
@@ -502,19 +635,53 @@
       </div>
     </section>
 
-    <!-- UPDATE LOG -->
-    <section class="section-card updatelog">
+    <!-- EM BREVE -->
+    <section class="section-card embreve">
+      <div class="card-top"><span></span><span></span><span></span><span></span></div>
+      <div class="card-kanji-bg">未</div>
+      <div class="card-inner" style="min-height: 200px; display: flex; flex-direction: column;">
+        <div class="section-header">
+          <span class="section-icon">⚙️</span>
+          <span class="section-title">Em Breve</span>
+          <span class="section-jp">近日公開</span>
+        </div>
+        <div class="section-rule"></div>
+        <div class="embreve-watermark" style="position: relative; flex: 1; display: flex; align-items: center; justify-content: center; min-height: 160px; overflow: hidden;">
+          <span style="
+            font-family: 'Cinzel', serif;
+            font-size: clamp(24px, 3.5vw, 42px);
+            font-weight: 900;
+            letter-spacing: 8px;
+            text-transform: uppercase;
+            color: var(--section-neon);
+            opacity: 0.1;
+            white-space: nowrap;
+            animation: watermark-pulse 5s ease-in-out infinite;
+            text-shadow: 0 0 40px var(--section-neon);
+            user-select: none;
+            pointer-events: none;
+            max-width: 100%;
+          ">EM BREVE</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- UPDATE LOG — full width -->
+    <section class="section-card updatelog updatelog-wide">
       <div class="card-top"><span></span><span></span><span></span><span></span></div>
       <div class="card-kanji-bg">録</div>
       <div class="card-inner">
-        <div class="section-header">
-          <span class="section-icon">📋</span>
-          <span class="section-title">Update Log</span>
-          <span class="section-jp">更新記録</span>
+        <div class="log-header-row">
+          <div class="section-header" style="margin-bottom:0; flex:1;">
+            <span class="section-icon">📋</span>
+            <span class="section-title">Update Log</span>
+            <span class="section-jp">更新記録</span>
+          </div>
+          <span class="log-date-badge">V4.25</span>
+          <span class="log-date-badge">18 · 04 · 2026</span>
         </div>
         <div class="section-rule"></div>
-        <span class="log-text">17/04/2026</span>
-        <div class="log-list">
+        <div class="log-list-wide">
           <div class="log-entry">
             <span class="log-num">01</span>
             <span class="log-text">Novo card exclusivo adicionado: <em>Gn-Math</em>.</span>
@@ -550,6 +717,7 @@
   </footer>
 
   <script>
+    // Leaves
     const container = document.getElementById('leaves');
 
     const leafSVGs = [
@@ -594,6 +762,7 @@
       container.appendChild(wrapper);
     }
 
+    // Mouse trail
     document.addEventListener('mousemove', e => {
       const d = document.createElement('div');
       d.style.cssText = `
@@ -606,6 +775,13 @@
       `;
       document.body.appendChild(d);
       setTimeout(() => { d.style.opacity='0'; setTimeout(()=>d.remove(),600); }, 40);
+    });
+
+    // Scroll indicator: hide when near bottom
+    const scrollEl = document.getElementById('scrollIndicator');
+    window.addEventListener('scroll', () => {
+      const scrolled = window.scrollY / (document.body.scrollHeight - window.innerHeight);
+      scrollEl.classList.toggle('hidden', scrolled > 0.88);
     });
   </script>
 </body>
