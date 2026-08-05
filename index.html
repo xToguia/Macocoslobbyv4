@@ -642,31 +642,33 @@
     <div style="position:absolute;top:8%;left:0;right:0;text-align:center;padding:0 20px;pointer-events:none;">
       <span style="font-family:'Noto Serif JP',serif;font-size:clamp(16px,3vw,30px);letter-spacing:2px;color:#fff;text-shadow:0 0 12px rgba(255,255,255,0.6);">☜︎︎💣︎︎ 👌︎︎☼︎︎☜︎︎✞︎︎☜︎︎📪︎︎ ✞︎︎🗄︎︎📬︎</span>
     </div>
-    <video id="secretVideo" src="assets/video/manegg.mp4" loop playsinline style="width:min(70vw,520px);max-height:70vh;border-radius:6px;box-shadow:0 0 40px rgba(0,0,0,0.8);"></video>
+    <video id="secretVideo" src="assets/video/manegg.mp4" loop playsinline style="width:min(70vw,520px);max-height:70vh;border-radius:6px;box-shadow:0 0 40px rgba(0,0,0,0.8);cursor:pointer;"></video>
   </div>
 
   <script>
-    document.addEventListener('DOMContentLoaded', function () {
-      const trigger = document.getElementById('secretApostrophe');
-      if (!trigger) return;
-      trigger.addEventListener('click', function () {
-        if (Math.random() >= 1 / 25) return; // 1 em 25 de chance
+  window.easterEggActive = false; // flag global
 
-        // Para a música de fundo
-        const bg = document.getElementById('bg-audio');
-        if (bg) bg.pause();
+  document.addEventListener('DOMContentLoaded', function () {
+    const trigger = document.getElementById('secretApostrophe');
+    if (!trigger) return;
+    trigger.addEventListener('click', function () {
+      if (Math.random() >= 1 / 50) return; // 1 em 50 de chance
 
-        // Esconde o resto da página e mostra o overlay secreto
-        const overlay = document.getElementById('secretOverlay');
-        overlay.style.display = 'flex';
+      window.easterEggActive = true; // <-- marca que entramos no easter egg
 
-        const video = document.getElementById('secretVideo');
-        video.muted = false;
-        video.currentTime = 0;
-        video.play().catch(() => {});
-      });
+      const bg = document.getElementById('bg-audio');
+      if (bg) bg.pause();
+
+      const overlay = document.getElementById('secretOverlay');
+      overlay.style.display = 'flex';
+
+      const video = document.getElementById('secretVideo');
+      video.muted = false;
+      video.currentTime = 0;
+      video.play().catch(() => {});
     });
-  </script>
+  });
+</script>
 
   <!-- ══ SIREN AUDIO ══ -->
   <audio id="sirenAudio" preload="auto">
@@ -1233,16 +1235,8 @@
     </button>
 
     <div id="volume-panel">
-      <span class="vol-icon">
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round">
-          <path d="M3 9v6h4l5 5V4L7 9H3z"/>
-          <path d="M15.5 8.5a5 5 0 0 1 0 7"/>
-          <path d="M18 6a8.5 8.5 0 0 1 0 12"/>
-        </svg>
-      </span>
-      <input type="range" id="audio-volume" min="0" max="100" value="30">
-    </div>
-  </div>
+  <input type="range" id="audio-volume" min="0" max="100" value="30">
+</div>
 
 <audio id="bg-audio" src="assets/audio/birdsslowed.mp3" loop preload="auto"></audio>
 
@@ -1281,13 +1275,16 @@
     updateSliderFill();
   });
 
+
   // Toca apenas quando a aba/guia está visível e em foco
   function playIfVisible() {
+    if (window.easterEggActive) return; // <-- não retoma a música normal se o easter egg estiver ativo
+
     if (document.visibilityState === 'visible' && document.hasFocus()) {
       audio.play().catch(() => {
         // Navegador pode bloquear até haver interação do usuário
         document.addEventListener('click', () => {
-          if (document.visibilityState === 'visible' && document.hasFocus()) {
+          if (document.visibilityState === 'visible' && document.hasFocus() && !window.easterEggActive) {
             audio.play();
           }
         }, { once: true });
