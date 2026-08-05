@@ -646,11 +646,11 @@
   </div>
 
   <script>
-    (function () {
+    document.addEventListener('DOMContentLoaded', function () {
       const trigger = document.getElementById('secretApostrophe');
       if (!trigger) return;
       trigger.addEventListener('click', function () {
-        if (Math.random() >= 1 / 20) return; // 1 em 20 de chance
+        if (Math.random() >= 1 / 25) return; // 1 em 25 de chance
 
         // Para a música de fundo
         const bg = document.getElementById('bg-audio');
@@ -665,7 +665,7 @@
         video.currentTime = 0;
         video.play().catch(() => {});
       });
-    })();
+    });
   </script>
 
   <!-- ══ SIREN AUDIO ══ -->
@@ -903,7 +903,7 @@
             <span class="section-jp">更新記録</span>
           </div>
           <span class="log-date-badge">V4.45</span>
-          <span class="log-date-badge">01 · 08 · 2026</span>
+          <span class="log-date-badge">05 · 08 · 2026</span>
         </div>
         <div class="section-rule"></div>
         <div class="log-list-wide">
