@@ -1041,5 +1041,64 @@
       scrollEl.classList.toggle('hidden', scrolled > 0.88);
     });
   </script>
+  <!-- Player de áudio de fundo -->
+<div id="audio-player-container" style="position: fixed; top: 15px; right: 15px; z-index: 9999; font-family: sans-serif;">
+  <button id="audio-toggle-btn" title="Som" style="cursor:pointer; background:#22c55e; border:none; width:32px; height:32px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 2px 6px rgba(0,0,0,0.3); transition: transform 0.15s ease;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="#fff">
+      <path d="M3 9v6h4l5 5V4L7 9H3z"/>
+      <path d="M16.5 12a4.5 4.5 0 0 0-2.5-4.03v8.06A4.5 4.5 0 0 0 16.5 12z"/>
+    </svg>
+  </button>
+
+  <div id="volume-panel" style="display:none; margin-top:8px; background:rgba(0,0,0,0.75); padding:8px 10px; border-radius:8px; box-shadow:0 2px 6px rgba(0,0,0,0.3);">
+    <input type="range" id="audio-volume" min="0" max="100" value="30" style="width: 100px;">
+  </div>
+</div>
+
+<audio id="bg-audio" src="assets/audio/birdsslowed.mp3" loop preload="auto"></audio>
+
+<script>
+  const audio = document.getElementById('bg-audio');
+  const volumeSlider = document.getElementById('audio-volume');
+  const toggleBtn = document.getElementById('audio-toggle-btn');
+  const volumePanel = document.getElementById('volume-panel');
+
+  // Volume inicial (altere o "value" do input acima para mudar o padrão)
+  audio.volume = volumeSlider.value / 100;
+
+  // Abre/fecha a barra de volume ao clicar no ícone
+  toggleBtn.addEventListener('click', () => {
+    volumePanel.style.display = volumePanel.style.display === 'none' ? 'block' : 'none';
+  });
+
+  volumeSlider.addEventListener('input', () => {
+    audio.volume = volumeSlider.value / 100;
+  });
+
+  // Toca apenas quando a aba/guia está visível e em foco
+  function playIfVisible() {
+    if (document.visibilityState === 'visible' && document.hasFocus()) {
+      audio.play().catch(() => {
+        // Navegador pode bloquear até haver interação do usuário
+        document.addEventListener('click', () => {
+          if (document.visibilityState === 'visible' && document.hasFocus()) {
+            audio.play();
+          }
+        }, { once: true });
+      });
+    } else {
+      audio.pause();
+    }
+  }
+
+  // Dispara quando o usuário troca de guia/minimiza
+  document.addEventListener('visibilitychange', playIfVisible);
+  // Dispara quando o usuário troca de janela/aplicativo
+  window.addEventListener('blur', () => audio.pause());
+  window.addEventListener('focus', playIfVisible);
+
+  // Tenta tocar ao carregar a página
+  playIfVisible();
+</script>
 </body>
 </html>
