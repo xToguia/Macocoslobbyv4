@@ -466,6 +466,19 @@
       text-shadow: 0 0 12px var(--neon-green);
     }
 
+    .hidden-binary {
+      position: absolute;
+      bottom: 10px;
+      right: 14px;
+      font-family: 'Courier New', monospace;
+      font-size: 9px;
+      letter-spacing: 1px;
+      color: #3d3d3d;
+      z-index: 2;
+      user-select: none;
+      pointer-events: none;
+    }
+
     @media (max-width: 700px) {
       .dashboard { grid-template-columns: 1fr; }
       .scroll-indicator { display: none; }
@@ -643,6 +656,7 @@
       <span style="font-family:'Noto Serif JP',serif;font-size:clamp(16px,3vw,30px);letter-spacing:2px;color:#fff;text-shadow:0 0 12px rgba(255,255,255,0.6);">☜︎︎💣︎︎ 👌︎︎☼︎︎☜︎︎✞︎︎☜︎︎📪︎︎ ✞︎︎🗄︎︎📬︎</span>
     </div>
     <video id="secretVideo" src="assets/video/manegg.mp4" loop playsinline style="width:min(70vw,520px);max-height:70vh;border-radius:6px;box-shadow:0 0 40px rgba(0,0,0,0.8);cursor:pointer;"></video>
+    <div class="hidden-binary">01110011 01101111 01101101</div>
   </div>
 
   <script>
@@ -911,7 +925,7 @@
         <div class="log-list-wide">
           <div class="log-entry"><span class="log-num">01</span><span class="log-text">Adição de botões especiais em <em>Jogos</em>, <em>Dle's</em> e <em>Fights</em> contendo 10 novos jogos.</span></div>
           <div class="log-entry"><span class="log-num">02</span><span class="log-text">Adição dos jogos Geoguessr, Gartic Phone e Happy Wheels além da seção de <em>.io's</em> no card <em>Jogos</em>.</span></div>
-          <div class="log-entry"><span class="log-num">03</span><span class="log-text">Adição dos jogos Celeste e TABS e remoção de FNAF2 no card <em>Gn-Math</em>.</span></div>
+          <div class="log-entry"><span class="log-num">03</span><span class="log-text" id="secretLogText3" style="cursor:default;">Adição dos jogos Celeste e TABS e remoção de FNAF2 no card <em>Gn-Math</em>.</span></div>
           <div class="log-entry"><span class="log-num">04</span><span class="log-text">Adição do jogo Gamedle e remoção de Valdle no card <em>Dle's</em> além de uma nova seção chamada <em>Word Games</em> com 5 jogos.</span></div>
           <div class="log-entry"><span class="log-num">05</span><span class="log-text">Separação entre <em>Undertale</em> e <em>Deltarune</em> no card de <em>Fights</em> contendo 1 "luta" nova.</span></div>
           <div class="log-entry"><span class="log-num">06</span><span class="log-text">Remoção de Notion e adição de ChatGPT e ImgUpscaler em seu lugar no card <em>Utilities</em>.</span></div>
@@ -1302,6 +1316,66 @@
 
   // Tenta tocar ao carregar a página
   playIfVisible();
+
+  // ── Easter egg secreto: 3 cliques no texto "03" do Update Log ──
+  (function() {
+    const secretEl = document.getElementById('secretLogText3');
+    if (!secretEl) return;
+    let clickCount = 0;
+    let clickTimer = null;
+
+    secretEl.addEventListener('click', function() {
+      clickCount++;
+
+      clearTimeout(clickTimer);
+      clickTimer = setTimeout(() => { clickCount = 0; }, 1500);
+
+      if (clickCount >= 3) {
+        clickCount = 0;
+        clearTimeout(clickTimer);
+
+        const secretWindow = window.open('', '_blank');
+        if (secretWindow) {
+          secretWindow.document.write(`<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title></title>
+<style>
+  html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background: #0a0a0a;
+  }
+  .secret-corner {
+    position: fixed;
+    top: 14px;
+    right: 16px;
+    text-align: right;
+    font-family: 'Courier New', monospace;
+  }
+  .secret-corner span {
+    display: block;
+    color: #3d3d3d;
+    font-size: 13px;
+    letter-spacing: 1px;
+    margin-bottom: 4px;
+  }
+</style>
+</head>
+<body>
+  <div class="secret-corner">
+    <span>oaawz://fvbab.il/idWj_f7QBu8</span>
+    <span>jojodle</span>
+  </div>
+</body>
+</html>`);
+          secretWindow.document.close();
+        }
+      }
+    });
+  })();
 </script>
 </body>
 </html>
