@@ -1316,66 +1316,7 @@
 
   // Tenta tocar ao carregar a página
   playIfVisible();
-
-  // ── Easter egg secreto: 3 cliques no texto "03" do Update Log ──
-  (function() {
-    const secretEl = document.getElementById('secretLogText3');
-    if (!secretEl) return;
-    let clickCount = 0;
-    let clickTimer = null;
-
-    secretEl.addEventListener('click', function() {
-      clickCount++;
-
-      clearTimeout(clickTimer);
-      clickTimer = setTimeout(() => { clickCount = 0; }, 1500);
-
-      if (clickCount >= 3) {
-        clickCount = 0;
-        clearTimeout(clickTimer);
-
-        const secretWindow = window.open('', '_blank');
-        if (secretWindow) {
-          secretWindow.document.write(`<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-<meta charset="UTF-8">
-<title></title>
-<style>
-  html, body {
-    margin: 0;
-    padding: 0;
-    height: 100%;
-    background: #0a0a0a;
-  }
-  .secret-corner {
-    position: fixed;
-    top: 14px;
-    right: 16px;
-    text-align: right;
-    font-family: 'Courier New', monospace;
-  }
-  .secret-corner span {
-    display: block;
-    color: #3d3d3d;
-    font-size: 13px;
-    letter-spacing: 1px;
-    margin-bottom: 4px;
-  }
-</style>
-</head>
-<body>
-  <div class="secret-corner">
-    <span>oaawz://fvbab.il/idWj_f7QBu8</span>
-    <span>jojodle</span>
-  </div>
-</body>
-</html>`);
-          secretWindow.document.close();
-        }
-      }
-    });
-  })();
+  
 </script>
 </body>
 </html>
