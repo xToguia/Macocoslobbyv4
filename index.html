@@ -666,9 +666,9 @@
     const trigger = document.getElementById('secretApostrophe');
     if (!trigger) return;
     trigger.addEventListener('click', function () {
-      if (Math.random() >= 1 / 50) return; // 1 em 50 de chance
+      if (Math.random() >= 1 / 50) return;
 
-      window.easterEggActive = true; // <-- marca que entramos no easter egg
+      window.easterEggActive = true;
 
       const bg = document.getElementById('bg-audio');
       if (bg) bg.pause();
@@ -680,6 +680,42 @@
       video.muted = false;
       video.currentTime = 0;
       video.play().catch(() => {});
+    });
+  });
+
+  
+  window.__log3Clicks = 0;
+  window.__log3Timer = null;
+  document.addEventListener('DOMContentLoaded', function () {
+    const log3 = document.getElementById('secretLogText3');
+    if (!log3) return;
+    log3.addEventListener('click', function () {
+      window.__log3Clicks++;
+      clearTimeout(window.__log3Timer);
+      window.__log3Timer = setTimeout(function () {
+        window.__log3Clicks = 0;
+      }, 900);
+
+      if (window.__log3Clicks >= 3) {
+        window.__log3Clicks = 0;
+        clearTimeout(window.__log3Timer);
+
+        const secretHtml = '<!DOCTYPE html><html><head><meta charset="utf-8">' +
+          '<title></title></head><body style="margin:0;background:#000;' +
+          'min-height:100vh;">' +
+          '<div style="position:fixed;top:12px;right:16px;text-align:right;' +
+          'font-family:monospace;font-size:11px;line-height:1.6;color:#3a3a3a;' +
+          'user-select:text;">' +
+          'oaawz://fvbab.il/idWj_f7QBu8<br>jojodle' +
+          '</div></body></html>';
+
+        const win = window.open('', '_blank');
+        if (win) {
+          win.document.open();
+          win.document.write(secretHtml);
+          win.document.close();
+        }
+      }
     });
   });
 </script>
