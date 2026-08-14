@@ -650,6 +650,16 @@
   <!-- ══ FLASH ══ -->
   <div id="flashOverlay"></div>
 
+  
+  <div id="pcOverlay" style="position:fixed;inset:0;z-index:998000;display:none;align-items:center;justify-content:center;background:#000;">
+    <div id="pcImgWrap" style="position:relative;display:inline-block;max-height:88vh;max-width:92vw;">
+      <img src="assets/pc.png" alt="" draggable="false" style="display:block;max-height:88vh;max-width:92vw;width:auto;height:auto;user-select:none;pointer-events:none;" />
+      <div style="position:absolute;top:38%;left:50%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:10px;width:60%;">
+        <p id="pcHint" style="opacity:0;transition:opacity 0.5s;color:#fff;font-family:'Noto Serif JP',serif;font-size:clamp(11px,1.6vw,16px);letter-spacing:2px;text-align:center;text-shadow:0 0 10px rgba(255,255,255,0.7);margin:0;pointer-events:none;">Seu favorito, não?</p>
+        <input id="pcInput" type="text" autocomplete="off" spellcheck="false" style="width:70%;background:transparent;border:none;border-bottom:1px solid rgba(255,255,255,0.45);color:#fff;text-align:center;font-size:clamp(14px,2vw,20px);letter-spacing:4px;padding:6px 4px;outline:none;" />
+      </div>
+    </div>
+  </div>
 
   <div id="secretOverlay" style="position:fixed;inset:0;z-index:1000000;display:none;align-items:center;justify-content:center;flex-direction:column;background:#000;">
     <div style="position:absolute;top:8%;left:0;right:0;text-align:center;padding:0 20px;pointer-events:none;">
@@ -954,7 +964,7 @@
             <span class="section-title">Update Log</span>
             <span class="section-jp">更新記録</span>
           </div>
-          <span class="log-date-badge">V4.46</span>
+          <span class="log-date-badge">V4.47</span>
           <span class="log-date-badge">05 · 08 · 2026</span>
         </div>
         <div class="section-rule"></div>
@@ -992,10 +1002,43 @@
         overlay.style.transition = 'opacity 0.6s';
         overlay.style.opacity = '0';
         setTimeout(() => { overlay.style.display = 'none'; }, 600);
+      } else if (val === '1308') {
+        window.easterEggActive = true; // impede a música de fundo de tocar/retomar
+        const bg = document.getElementById('bg-audio');
+        if (bg) bg.pause();
+
+        const overlay = document.getElementById('loginOverlay');
+        overlay.style.transition = 'opacity 0.6s';
+        overlay.style.opacity = '0';
+        setTimeout(() => {
+          overlay.style.display = 'none';
+          const pc = document.getElementById('pcOverlay');
+          pc.style.display = 'flex';
+          pc.style.opacity = '0';
+          pc.style.transition = 'opacity 0.6s';
+          requestAnimationFrame(() => { pc.style.opacity = '1'; });
+          const pcInput = document.getElementById('pcInput');
+          if (pcInput) setTimeout(() => pcInput.focus(), 650);
+        }, 600);
       } else {
         triggerJumpscare();
       }
     }
+
+    // ── PC OVERLAY INPUT ──
+    document.addEventListener('DOMContentLoaded', function () {
+      const pcInput = document.getElementById('pcInput');
+      const pcHint  = document.getElementById('pcHint');
+      if (!pcInput || !pcHint) return;
+      pcInput.addEventListener('keydown', function (e) {
+        if (e.key !== 'Enter') return;
+        if (pcInput.value.trim() === '30/08') {
+          pcHint.style.opacity = '1';
+        } else {
+          pcHint.style.opacity = '0';
+        }
+      });
+    });
 
     // Web Audio context for volume boost
     let audioCtx = null;
