@@ -1044,7 +1044,7 @@
         const normalized = pcInput.value.trim().toLowerCase();
         if (normalized === '30/08') {
           pcHint.style.opacity = '1';
-          startSnakeGame(e); // "e" é o keydown do Enter: gesto real do usuário, precisa pra abrir a aba sem ser bloqueado
+          startSnakeGame();
         } else if (normalized === 'por sua culpa') {
           const pc = document.getElementById('pcOverlay');
           const culpa = document.getElementById('culpaOverlay');
@@ -1067,22 +1067,9 @@
     window.snakeGameActive = false;
     window.snakeGameStarted = false;
     window.snakeSetDir = null;
-    window.snakeRevealWindow = null; // referência da aba já aberta, preenchida só quando ganhar
     window.snakeRevealed = false;
 
-    // Abre a aba em branco/preta JÁ NO GESTO do Enter (senão o navegador bloqueia o popup
-    // quando tentarmos abrir depois, de dentro do loop do jogo).
     function openRevealTab() {
-      if (window.snakeRevealWindow && !window.snakeRevealWindow.closed) return;
-      const w = window.open('', '_blank');
-      if (!w) return; // navegador bloqueou o popup — sem problema, o jogo continua normal
-      w.document.write('<!doctype html><html><head><meta charset="utf-8"><title>.</title></head><body style="margin:0;background:#000;height:100vh;"></body></html>');
-      w.document.close();
-      window.snakeRevealWindow = w;
-    }
-
-    function fillRevealTab() {
-      const w = window.snakeRevealWindow;
       const imgUrl = new URL('assets/background02.png', document.baseURI).href;
       const html = '<!doctype html><html><head><meta charset="utf-8"><title>.</title>' +
         '<style>html,body{margin:0;background:#000;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;}' +
@@ -1093,20 +1080,13 @@
         '<p>01010110 01101111 01101100 01110100 01100101 00100000 01100101 01101101 00100000 01100010 01110010 01100101 01110110 01100101 00101110 00101110 00101110</p>' +
         '</body></html>';
 
-      if (w && !w.closed) {
-        w.document.open();
-        w.document.write(html);
-        w.document.close();
-      } else {
-        // popup foi bloqueado ou fechado — tenta abrir agora mesmo assim
-        const w2 = window.open('', '_blank');
-        if (w2) { w2.document.write(html); w2.document.close(); }
-      }
+      const w = window.open('', '_blank');
+      if (!w) return; // navegador bloqueou o popup (pode acontecer, já que não é mais aberto no gesto do Enter)
+      w.document.write(html);
+      w.document.close();
     }
 
-    function startSnakeGame(triggerEvent) {
-      if (triggerEvent) openRevealTab(); // precisa ser síncrono com o Enter do usuário
-
+    function startSnakeGame() {
       const screen = document.getElementById('snakeScreen');
       const hintWrap = document.getElementById('pcHintWrap');
       if (!screen) return;
@@ -1172,6 +1152,7 @@
         if (head.y >= rows) head.y = 0;
 
         if (snake.some(s => s.x === head.x && s.y === head.y)) {
+          bananaCount = 0; // encostou nela mesma: contador zera
           resetSnake();
           placeBanana();
           draw();
@@ -1184,7 +1165,7 @@
           bananaCount++;
           if (bananaCount === 20 && !window.snakeRevealed) {
             window.snakeRevealed = true;
-            fillRevealTab(); // abre/revela a outra aba — esta continua no jogo, sem mudar nada
+            openRevealTab(); // só abre a aba nova aqui, ao completar 20 — a atual continua no jogo
           }
           placeBanana();
         } else {
