@@ -257,6 +257,129 @@
     }
     .neon-btn:hover::before { left: 160%; }
 
+    /* --- Slot Machine --- */
+    .slot-machine-wrap {
+      position: relative;
+      width: 100%; height: 100%;
+      display: flex; align-items: center; justify-content: center;
+      gap: 22px;
+      flex-wrap: wrap;
+    }
+    .slot-cabinet {
+      position: relative;
+      background: linear-gradient(160deg, rgba(0,255,100,0.06), rgba(0,10,4,0.6));
+      border: 1px solid rgba(0,255,100,0.28);
+      border-radius: 12px;
+      padding: 14px 16px 10px;
+      box-shadow: inset 0 0 22px rgba(0,255,100,0.07), 0 4px 22px rgba(0,0,0,0.5);
+    }
+    .slot-cabinet-lights {
+      display: flex; justify-content: space-between;
+      padding: 0 2px 8px;
+    }
+    .slot-cabinet-lights span {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--neon-green);
+      box-shadow: 0 0 6px var(--neon-green);
+      animation: slot-light-blink 1.6s ease-in-out infinite;
+      opacity: 0.4;
+    }
+    .slot-cabinet-lights span:nth-child(2) { animation-delay: 0.2s; }
+    .slot-cabinet-lights span:nth-child(3) { animation-delay: 0.4s; }
+    .slot-cabinet-lights span:nth-child(4) { animation-delay: 0.6s; }
+    .slot-cabinet-lights span:nth-child(5) { animation-delay: 0.8s; }
+    @keyframes slot-light-blink { 0%,100% { opacity: 0.25; } 50% { opacity: 1; } }
+
+    .slot-screen {
+      display: flex; gap: 8px;
+      background: #020805;
+      border: 1px solid rgba(0,255,100,0.35);
+      border-radius: 6px;
+      padding: 10px;
+      box-shadow: inset 0 0 16px rgba(0,0,0,0.85);
+    }
+    .slot-reel {
+      width: 42px; height: 50px;
+      display: flex; align-items: center; justify-content: center;
+      font-family: 'Sawarabi Mincho', serif;
+      font-size: 24px;
+      color: var(--neon-green);
+      text-shadow: 0 0 10px var(--neon-green);
+      background: rgba(0,255,100,0.03);
+      border: 1px solid rgba(0,255,100,0.14);
+      border-radius: 4px;
+      user-select: none;
+    }
+    .slot-reel.spinning {
+      color: var(--neon-lime);
+      filter: blur(1.5px);
+      animation: slot-reel-shake 0.09s linear infinite;
+    }
+    @keyframes slot-reel-shake {
+      0%   { transform: translateY(-3px); }
+      50%  { transform: translateY(3px); }
+      100% { transform: translateY(-3px); }
+    }
+
+    .slot-result {
+      text-align: center;
+      margin-top: 9px;
+      font-family: 'Cinzel', serif;
+      font-size: 9px;
+      letter-spacing: 3px;
+      color: var(--dim);
+      min-height: 12px;
+      transition: color 0.3s ease;
+    }
+    .slot-result.is-hit {
+      color: var(--neon-green);
+      text-shadow: 0 0 8px var(--neon-green);
+    }
+
+    .slot-lever-wrap {
+      display: flex; flex-direction: column; align-items: center;
+      cursor: pointer;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .slot-lever-track { position: relative; width: 22px; height: 74px; }
+    .slot-lever-arm {
+      position: absolute; bottom: 0; left: 50%;
+      width: 5px; height: 100%;
+      background: linear-gradient(180deg, #666, #161616);
+      border-radius: 4px;
+      transform-origin: bottom center;
+      transform: translateX(-50%) rotate(-16deg);
+      transition: transform 0.16s cubic-bezier(0.6, 0, 0.4, 1);
+    }
+    .slot-lever-knob {
+      position: absolute; top: -9px; left: 50%;
+      transform: translateX(-50%);
+      width: 19px; height: 19px;
+      border-radius: 50%;
+      background: radial-gradient(circle at 35% 30%, var(--neon-lime), var(--neon-jade) 55%, #063d1f);
+      box-shadow: 0 0 12px var(--neon-green);
+      animation: slot-knob-pulse 2.2s ease-in-out infinite;
+    }
+    @keyframes slot-knob-pulse {
+      0%, 100% { box-shadow: 0 0 10px var(--neon-green); }
+      50%      { box-shadow: 0 0 20px var(--neon-green), 0 0 30px rgba(0,255,100,0.4); }
+    }
+    .slot-lever-base {
+      width: 26px; height: 13px; margin-top: -2px;
+      border-radius: 6px;
+      background: linear-gradient(180deg, #444, #111);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.6);
+    }
+    .slot-lever-wrap:hover .slot-lever-arm { transform: translateX(-50%) rotate(-8deg); }
+    .slot-lever-wrap.pulled .slot-lever-arm { transform: translateX(-50%) rotate(32deg); }
+    .slot-lever-label {
+      margin-top: 8px;
+      font-family: 'Cinzel', serif;
+      font-size: 8px; letter-spacing: 2px;
+      color: var(--dim); text-align: center;
+      max-width: 60px;
+    }
+
     .neon-btn:hover {
       background: rgba(0,255,100,0.05);
       border-color: var(--section-neon);
@@ -953,12 +1076,34 @@
       <div class="card-inner" style="min-height:200px;display:flex;flex-direction:column;">
         <div class="section-header">
           <span class="section-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M12 2.5v3M12 18.5v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2.5 12h3M18.5 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1"/></svg></span>
-          <span class="section-title">Em Breve</span>
+          <span class="section-title">Slots</span>
           <span class="section-jp">近日公開</span>
         </div>
         <div class="section-rule"></div>
         <div style="position:relative;flex:1;display:flex;align-items:center;justify-content:center;min-height:160px;overflow:hidden;">
-          <span style="font-family:'Cinzel',serif;font-size:clamp(24px,3.5vw,42px);font-weight:900;letter-spacing:8px;text-transform:uppercase;color:var(--section-neon);opacity:0.1;white-space:nowrap;animation:watermark-pulse 5s ease-in-out infinite;text-shadow:0 0 40px var(--section-neon);user-select:none;pointer-events:none;max-width:100%;">EM BREVE</span>
+          <span style="position:absolute;font-family:'Cinzel',serif;font-size:clamp(24px,3.5vw,42px);font-weight:900;letter-spacing:8px;text-transform:uppercase;color:var(--section-neon);opacity:0.06;white-space:nowrap;animation:watermark-pulse 5s ease-in-out infinite;text-shadow:0 0 40px var(--section-neon);user-select:none;pointer-events:none;max-width:100%;">SLOTS</span>
+
+          <div class="slot-machine-wrap">
+            <div class="slot-cabinet">
+              <div class="slot-cabinet-lights"><span></span><span></span><span></span><span></span><span></span></div>
+              <div class="slot-screen">
+                <div class="slot-reel" id="reel1">運</div>
+                <div class="slot-reel" id="reel2">戯</div>
+                <div class="slot-reel" id="reel3">運</div>
+              </div>
+              <div class="slot-result" id="slotResult">PUXE A ALAVANCA</div>
+            </div>
+
+            <div class="slot-lever-wrap" id="slotLever" tabindex="0" role="button" aria-label="Puxar alavanca da sorte">
+              <div class="slot-lever-track">
+                <div class="slot-lever-arm">
+                  <div class="slot-lever-knob"></div>
+                </div>
+              </div>
+              <div class="slot-lever-base"></div>
+              <div class="slot-lever-label">SORTE 運</div>
+            </div>
+          </div>
         </div>
       </div>
     </section>
@@ -1345,6 +1490,144 @@
         btn.addEventListener('click', () => showJogosView(btn.dataset.jogosTarget));
       });
       showJogosView('main');
+    })();
+
+    // Caça-níquel do card "Em Breve" (sorteia um link de Dle's, Jogos, Gn-Math ou Fights)
+    (function () {
+      const lever = document.getElementById('slotLever');
+      if (!lever) return;
+
+      const reels = [
+        document.getElementById('reel1'),
+        document.getElementById('reel2'),
+        document.getElementById('reel3')
+      ];
+      const resultLabel = document.getElementById('slotResult');
+      const symbols = ['運','戯','龍','虎','桜','鶴','梅','球','戦','算'];
+
+      // Todos os links de Dle's, Jogos, Gn-Math e Fights (Utilities fica de fora de propósito)
+      const slotLinks = [
+        // Dle's
+        { name: 'Paranordle', url: 'https://paranordle.com.br/jogar' },
+        { name: 'Narutodle', url: 'https://narutodle.net' },
+        { name: 'Onepiecedle', url: 'https://onepiecedle.net' },
+        { name: 'Pokédle', url: 'https://pokedle.net' },
+        { name: 'Pokédle II', url: 'https://pokedle.com' },
+        { name: 'Bleachdle', url: 'https://bleachle.com' },
+        { name: 'Jojodle', url: 'https://www.jojodle.app' },
+        { name: 'Brawldle', url: 'https://www.brawldle.gg' },
+        { name: 'Minecraftdle', url: 'https://www.mcdle.net/pt_br' },
+        { name: 'Gamedle', url: 'https://www.gamedle.wtf' },
+        { name: 'Termo', url: 'https://term.ooo' },
+        { name: 'Contexto', url: 'https://contexto.me/pt/' },
+        { name: 'Conexo', url: 'https://conexo.ws/pt/' },
+        { name: 'Letroso', url: 'https://letroso.com/pt/' },
+        { name: 'Expresso', url: 'https://expresso.ac/pt/' },
+        // Jogos
+        { name: 'Pokédoku', url: 'https://pokedoku.com' },
+        { name: 'Poki', url: 'https://poki.com/br' },
+        { name: 'Snake', url: 'https://www.google.com/search?q=snake+game+google' },
+        { name: 'Block Breaker', url: 'https://www.google.com/search?q=block+breaker+game' },
+        { name: 'Tetris', url: 'https://tetr.io' },
+        { name: 'PokéShowdown', url: 'https://play.pokemonshowdown.com' },
+        { name: 'Geoguessr', url: 'https://www.geoguessr.com/pt' },
+        { name: 'Gartic Phone', url: 'https://garticphone.com/pt' },
+        { name: 'Happy Wheels', url: 'https://totaljerkface.com/happy_wheels.tjf' },
+        { name: 'Super Smash Flash 2', url: 'https://www.snokido.com/game/super-smash-flash-2' },
+        { name: 'Slither', url: 'http://slither.com/io' },
+        { name: 'Mope', url: 'https://mope.io' },
+        { name: 'Deeeep', url: 'https://deeeep.io' },
+        { name: 'Diep', url: 'https://diep.io/' },
+        { name: 'Agar', url: 'https://agar.io' },
+        { name: 'Braains', url: 'https://www.braains.io' },
+        // Gn-Math
+        { name: 'Gn-Math', url: 'https://gn-math.dev/' },
+        { name: 'Brotato', url: 'https://gn-math.dev/?id=723' },
+        { name: 'Hollow Knight', url: 'https://gn-math.dev/?id=468' },
+        { name: 'Silksong', url: 'https://gn-math.dev/?id=771' },
+        { name: 'Cuphead', url: 'https://gn-math.dev/?id=465' },
+        { name: 'Ultrakill', url: 'https://gn-math.dev/?id=196' },
+        { name: 'Celeste', url: 'https://gn-math.dev/?id=623' },
+        { name: 'TABS', url: 'https://gn-math.dev/?id=430' },
+        { name: 'Bitlife', url: 'https://gn-math.dev/?id=70' },
+        { name: '20 Minutes Till Dawn', url: 'https://gn-math.dev/?id=819' },
+        { name: 'Buckshot Roulette', url: 'https://gn-math.dev/?id=205' },
+        // Fights
+        { name: 'Sans', url: 'https://jcw87.github.io/c2-sans-fight' },
+        { name: 'Undyne', url: 'https://turbowarp.org/669974432/fullscreen?hqpen' },
+        { name: 'Omega Flowey', url: 'https://turbowarp.org/704938937/fullscreen?hqpen' },
+        { name: 'Asriel Dreemurr', url: 'https://turbowarp.org/614610315/fullscreen?hqpen' },
+        { name: 'Asgore', url: 'https://turbowarp.org/671171726/fullscreen?hqpen' },
+        { name: 'Mettaton EX', url: 'https://turbowarp.org/1077453457/fullscreen?hqpen' },
+        { name: 'Queen', url: 'https://turbowarp.org/604681896/fullscreen?hqpen' },
+        { name: 'Spamton NEO', url: 'https://turbowarp.org/572344262/fullscreen?hqpen' },
+        { name: 'Jevil', url: 'https://turbowarp.org/600739641/fullscreen?hqpen' },
+        { name: 'Roaring Knight', url: 'https://turbowarp.org/1189208954/fullscreen?hqpen' },
+        { name: 'Lightners Live', url: 'https://ezioeagle.itch.io/lightners-live-plus' }
+      ];
+
+      let spinning = false;
+
+      function randomSymbol() {
+        return symbols[Math.floor(Math.random() * symbols.length)];
+      }
+
+      function spinReel(el, duration) {
+        return new Promise((resolve) => {
+          const tick = setInterval(() => { el.textContent = randomSymbol(); }, 55);
+          setTimeout(() => {
+            clearInterval(tick);
+            el.classList.remove('spinning');
+            el.textContent = randomSymbol();
+            resolve();
+          }, duration);
+        });
+      }
+
+      function pullLever() {
+        if (spinning) return;
+        spinning = true;
+
+        lever.classList.add('pulled');
+        setTimeout(() => lever.classList.remove('pulled'), 260);
+
+        reels.forEach((r) => r.classList.add('spinning'));
+        if (resultLabel) {
+          resultLabel.classList.remove('is-hit');
+          resultLabel.textContent = 'GIRANDO...';
+        }
+
+        const chosen = slotLinks[Math.floor(Math.random() * slotLinks.length)];
+
+        Promise.all([
+          spinReel(reels[0], 650),
+          spinReel(reels[1], 1000),
+          spinReel(reels[2], 1400)
+        ]).then(() => {
+          spinning = false;
+          if (resultLabel) {
+            resultLabel.textContent = chosen.name.toUpperCase();
+            resultLabel.classList.add('is-hit');
+          }
+          setTimeout(() => {
+            window.open(chosen.url, '_blank');
+            if (resultLabel) {
+              setTimeout(() => {
+                resultLabel.classList.remove('is-hit');
+                resultLabel.textContent = 'PUXE A ALAVANCA';
+              }, 2200);
+            }
+          }, 250);
+        });
+      }
+
+      lever.addEventListener('click', pullLever);
+      lever.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          pullLever();
+        }
+      });
     })();
 
     // Scroll indicator
