@@ -1298,9 +1298,10 @@
     window.snakeGameStarted = false;
     window.snakeSetDir = null;
     window.snakeRevealed = false;
+    window.snakeRevealed50 = false;
 
-    function openRevealTab() {
-      const imgUrl = new URL('assets/background02.png', document.baseURI).href;
+    function openRevealTab(imgPath) {
+      const imgUrl = new URL(imgPath || 'assets/background02.png', document.baseURI).href;
       const html = '<!doctype html><html><head><meta charset="utf-8"><title>.</title>' +
         '<style>html,body{margin:0;background:#000;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;}' +
         'img{display:block;max-height:75vh;max-width:85vw;width:auto;height:auto;user-select:none;}' +
@@ -1369,7 +1370,7 @@
         ctx.fillStyle = '#666';
         ctx.font = '10px monospace';
         ctx.textBaseline = 'top';
-        ctx.fillText(Math.min(bananaCount, 20) + '/20', 4, 4);
+        ctx.fillText(bananaCount + '/20', 4, 4);
       }
 
       function step() {
@@ -1382,7 +1383,9 @@
         if (head.y >= rows) head.y = 0;
 
         if (snake.some(s => s.x === head.x && s.y === head.y)) {
-          bananaCount = 0; // encostou nela mesma: contador zera
+          // encostou nela mesma: contador zera, exceto se já tiver passado de 20 —
+          // nesse caso volta pro "checkpoint" de 20, não pro 0
+          bananaCount = bananaCount >= 20 ? 20 : 0;
           resetSnake();
           placeBanana();
           draw();
@@ -1395,7 +1398,11 @@
           bananaCount++;
           if (bananaCount === 20 && !window.snakeRevealed) {
             window.snakeRevealed = true;
-            openRevealTab(); // só abre a aba nova aqui, ao completar 20 — a atual continua no jogo
+            openRevealTab('assets/background02.png'); // só abre a aba nova aqui, ao completar 20 — a atual continua no jogo
+          }
+          if (bananaCount === 50 && !window.snakeRevealed50) {
+            window.snakeRevealed50 = true;
+            openRevealTab('assets/89.png'); // segunda revelação, ao completar 50 — o jogo continua normalmente
           }
           placeBanana();
         } else {
