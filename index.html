@@ -1313,10 +1313,9 @@
         '<audio id="revealNoise" src="' + audioUrl + '" loop autoplay></audio>' +
         '<script>(function(){' +
           'var a=document.getElementById("revealNoise");' +
-          'function tryPlay(){ if(a) a.play().catch(function(){}); }' +
-          'tryPlay();' +
-          "document.addEventListener('click', tryPlay, { once: true });" +
-          "document.addEventListener('keydown', tryPlay, { once: true });" +
+          'a.play().catch(function(){' +
+            "document.addEventListener('click', function(){ a.play(); }, { once: true });" +
+          '});' +
         '})();</' + 'script>' +
         '</body></html>';
 
