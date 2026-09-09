@@ -290,6 +290,40 @@
     .slot-cabinet-lights span:nth-child(5) { animation-delay: 0.8s; }
     @keyframes slot-light-blink { 0%,100% { opacity: 0.25; } 50% { opacity: 1; } }
 
+    .slot-category-bar {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      justify-content: center;
+      padding: 8px 4px 2px;
+    }
+    .slot-category-btn {
+      font-family: 'Cinzel', serif;
+      font-size: 10px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+      color: var(--dim);
+      background: rgba(0,255,100,0.04);
+      border: 1px solid rgba(0,255,100,0.25);
+      border-radius: 20px;
+      padding: 5px 12px;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .slot-category-btn:hover {
+      color: var(--neon-lime);
+      border-color: rgba(0,255,100,0.55);
+      background: rgba(0,255,100,0.08);
+    }
+    .slot-category-btn.is-active {
+      color: #020805;
+      background: var(--neon-green);
+      border-color: var(--neon-green);
+      box-shadow: 0 0 10px var(--neon-green);
+      font-weight: 700;
+    }
+
     .slot-screen {
       display: flex; gap: 8px;
       background: #020805;
@@ -1089,6 +1123,13 @@
           <span class="section-jp">近日公開</span>
         </div>
         <div class="section-rule"></div>
+        <div class="slot-category-bar" id="slotCategoryBar">
+          <button type="button" class="slot-category-btn is-active" data-slot-cat="Todos">Todos</button>
+          <button type="button" class="slot-category-btn" data-slot-cat="Dle's">Dle's</button>
+          <button type="button" class="slot-category-btn" data-slot-cat="Jogos">Jogos</button>
+          <button type="button" class="slot-category-btn" data-slot-cat="Gn-Math">Gn-Math</button>
+          <button type="button" class="slot-category-btn" data-slot-cat="Fights">Fights</button>
+        </div>
         <div style="position:relative;flex:1;display:flex;align-items:center;justify-content:center;min-height:160px;overflow:hidden;">
           <span style="position:absolute;font-family:'Cinzel',serif;font-size:clamp(24px,3.5vw,42px);font-weight:900;letter-spacing:8px;text-transform:uppercase;color:var(--section-neon);opacity:0.06;white-space:nowrap;animation:watermark-pulse 5s ease-in-out infinite;text-shadow:0 0 40px var(--section-neon);user-select:none;pointer-events:none;max-width:100%;">SLOTS</span>
 
@@ -1610,63 +1651,81 @@
       // Todos os links de Dle's, Jogos, Gn-Math e Fights (Utilities fica de fora de propósito)
       const slotLinks = [
         // Dle's
-        { name: 'Paranordle', url: 'https://paranordle.com.br/jogar' },
-        { name: 'Narutodle', url: 'https://narutodle.net' },
-        { name: 'Onepiecedle', url: 'https://onepiecedle.net' },
-        { name: 'Pokédle', url: 'https://pokedle.net' },
-        { name: 'Pokédle II', url: 'https://pokedle.com' },
-        { name: 'Bleachdle', url: 'https://bleachle.com' },
-        { name: 'Jojodle', url: 'https://www.jojodle.app' },
-        { name: 'Brawldle', url: 'https://www.brawldle.gg' },
-        { name: 'Minecraftdle', url: 'https://www.mcdle.net/pt_br' },
-        { name: 'Gamedle', url: 'https://www.gamedle.wtf' },
-        { name: 'Termo', url: 'https://term.ooo' },
-        { name: 'Contexto', url: 'https://contexto.me/pt/' },
-        { name: 'Conexo', url: 'https://conexo.ws/pt/' },
-        { name: 'Letroso', url: 'https://letroso.com/pt/' },
-        { name: 'Expresso', url: 'https://expresso.ac/pt/' },
+        { name: 'Paranordle', url: 'https://paranordle.com.br/jogar', cat: "Dle's" },
+        { name: 'Narutodle', url: 'https://narutodle.net', cat: "Dle's" },
+        { name: 'Onepiecedle', url: 'https://onepiecedle.net', cat: "Dle's" },
+        { name: 'Pokédle', url: 'https://pokedle.net', cat: "Dle's" },
+        { name: 'Pokédle II', url: 'https://pokedle.com', cat: "Dle's" },
+        { name: 'Bleachdle', url: 'https://bleachle.com', cat: "Dle's" },
+        { name: 'Jojodle', url: 'https://www.jojodle.app', cat: "Dle's" },
+        { name: 'Brawldle', url: 'https://www.brawldle.gg', cat: "Dle's" },
+        { name: 'Minecraftdle', url: 'https://www.mcdle.net/pt_br', cat: "Dle's" },
+        { name: 'Gamedle', url: 'https://www.gamedle.wtf', cat: "Dle's" },
+        { name: 'Termo', url: 'https://term.ooo', cat: "Dle's" },
+        { name: 'Contexto', url: 'https://contexto.me/pt/', cat: "Dle's" },
+        { name: 'Conexo', url: 'https://conexo.ws/pt/', cat: "Dle's" },
+        { name: 'Letroso', url: 'https://letroso.com/pt/', cat: "Dle's" },
+        { name: 'Expresso', url: 'https://expresso.ac/pt/', cat: "Dle's" },
         // Jogos
-        { name: 'Pokédoku', url: 'https://pokedoku.com' },
-        { name: 'Poki', url: 'https://poki.com/br' },
-        { name: 'Snake', url: 'https://www.google.com/search?q=snake+game+google' },
-        { name: 'Block Breaker', url: 'https://www.google.com/search?q=block+breaker+game' },
-        { name: 'Tetris', url: 'https://tetr.io' },
-        { name: 'PokéShowdown', url: 'https://play.pokemonshowdown.com' },
-        { name: 'Geoguessr', url: 'https://www.geoguessr.com/pt' },
-        { name: 'Gartic Phone', url: 'https://garticphone.com/pt' },
-        { name: 'Happy Wheels', url: 'https://totaljerkface.com/happy_wheels.tjf' },
-        { name: 'Super Smash Flash 2', url: 'https://www.snokido.com/game/super-smash-flash-2' },
-        { name: 'Slither', url: 'http://slither.com/io' },
-        { name: 'Mope', url: 'https://mope.io' },
-        { name: 'Deeeep', url: 'https://deeeep.io' },
-        { name: 'Diep', url: 'https://diep.io/' },
-        { name: 'Agar', url: 'https://agar.io' },
-        { name: 'Braains', url: 'https://www.braains.io' },
+        { name: 'Pokédoku', url: 'https://pokedoku.com', cat: 'Jogos' },
+        { name: 'Poki', url: 'https://poki.com/br', cat: 'Jogos' },
+        { name: 'Snake', url: 'https://www.google.com/search?q=snake+game+google', cat: 'Jogos' },
+        { name: 'Block Breaker', url: 'https://www.google.com/search?q=block+breaker+game', cat: 'Jogos' },
+        { name: 'Tetris', url: 'https://tetr.io', cat: 'Jogos' },
+        { name: 'PokéShowdown', url: 'https://play.pokemonshowdown.com', cat: 'Jogos' },
+        { name: 'Geoguessr', url: 'https://www.geoguessr.com/pt', cat: 'Jogos' },
+        { name: 'Gartic Phone', url: 'https://garticphone.com/pt', cat: 'Jogos' },
+        { name: 'Happy Wheels', url: 'https://totaljerkface.com/happy_wheels.tjf', cat: 'Jogos' },
+        { name: 'Super Smash Flash 2', url: 'https://www.snokido.com/game/super-smash-flash-2', cat: 'Jogos' },
+        { name: 'Slither', url: 'http://slither.com/io', cat: 'Jogos' },
+        { name: 'Mope', url: 'https://mope.io', cat: 'Jogos' },
+        { name: 'Deeeep', url: 'https://deeeep.io', cat: 'Jogos' },
+        { name: 'Diep', url: 'https://diep.io/', cat: 'Jogos' },
+        { name: 'Agar', url: 'https://agar.io', cat: 'Jogos' },
+        { name: 'Braains', url: 'https://www.braains.io', cat: 'Jogos' },
         // Gn-Math
-        { name: 'Gn-Math', url: 'https://gn-math.dev/' },
-        { name: 'Brotato', url: 'https://gn-math.dev/?id=723' },
-        { name: 'Hollow Knight', url: 'https://gn-math.dev/?id=468' },
-        { name: 'Silksong', url: 'https://gn-math.dev/?id=771' },
-        { name: 'Cuphead', url: 'https://gn-math.dev/?id=465' },
-        { name: 'Ultrakill', url: 'https://gn-math.dev/?id=196' },
-        { name: 'Celeste', url: 'https://gn-math.dev/?id=623' },
-        { name: 'TABS', url: 'https://gn-math.dev/?id=430' },
-        { name: 'Bitlife', url: 'https://gn-math.dev/?id=70' },
-        { name: '20 Minutes Till Dawn', url: 'https://gn-math.dev/?id=819' },
-        { name: 'Buckshot Roulette', url: 'https://gn-math.dev/?id=205' },
+        { name: 'Gn-Math', url: 'https://gn-math.dev/', cat: 'Gn-Math' },
+        { name: 'Brotato', url: 'https://gn-math.dev/?id=723', cat: 'Gn-Math' },
+        { name: 'Hollow Knight', url: 'https://gn-math.dev/?id=468', cat: 'Gn-Math' },
+        { name: 'Silksong', url: 'https://gn-math.dev/?id=771', cat: 'Gn-Math' },
+        { name: 'Cuphead', url: 'https://gn-math.dev/?id=465', cat: 'Gn-Math' },
+        { name: 'Ultrakill', url: 'https://gn-math.dev/?id=196', cat: 'Gn-Math' },
+        { name: 'Celeste', url: 'https://gn-math.dev/?id=623', cat: 'Gn-Math' },
+        { name: 'TABS', url: 'https://gn-math.dev/?id=430', cat: 'Gn-Math' },
+        { name: 'Bitlife', url: 'https://gn-math.dev/?id=70', cat: 'Gn-Math' },
+        { name: '20 Minutes Till Dawn', url: 'https://gn-math.dev/?id=819', cat: 'Gn-Math' },
+        { name: 'Buckshot Roulette', url: 'https://gn-math.dev/?id=205', cat: 'Gn-Math' },
         // Fights
-        { name: 'Sans', url: 'https://jcw87.github.io/c2-sans-fight' },
-        { name: 'Undyne', url: 'https://turbowarp.org/669974432/fullscreen?hqpen' },
-        { name: 'Omega Flowey', url: 'https://turbowarp.org/704938937/fullscreen?hqpen' },
-        { name: 'Asriel Dreemurr', url: 'https://turbowarp.org/614610315/fullscreen?hqpen' },
-        { name: 'Asgore', url: 'https://turbowarp.org/671171726/fullscreen?hqpen' },
-        { name: 'Mettaton EX', url: 'https://turbowarp.org/1077453457/fullscreen?hqpen' },
-        { name: 'Queen', url: 'https://turbowarp.org/604681896/fullscreen?hqpen' },
-        { name: 'Spamton NEO', url: 'https://turbowarp.org/572344262/fullscreen?hqpen' },
-        { name: 'Jevil', url: 'https://turbowarp.org/600739641/fullscreen?hqpen' },
-        { name: 'Roaring Knight', url: 'https://turbowarp.org/1189208954/fullscreen?hqpen' },
-        { name: 'Lightners Live', url: 'https://ezioeagle.itch.io/lightners-live-plus' }
+        { name: 'Sans', url: 'https://jcw87.github.io/c2-sans-fight', cat: 'Fights' },
+        { name: 'Undyne', url: 'https://turbowarp.org/669974432/fullscreen?hqpen', cat: 'Fights' },
+        { name: 'Omega Flowey', url: 'https://turbowarp.org/704938937/fullscreen?hqpen', cat: 'Fights' },
+        { name: 'Asriel Dreemurr', url: 'https://turbowarp.org/614610315/fullscreen?hqpen', cat: 'Fights' },
+        { name: 'Asgore', url: 'https://turbowarp.org/671171726/fullscreen?hqpen', cat: 'Fights' },
+        { name: 'Mettaton EX', url: 'https://turbowarp.org/1077453457/fullscreen?hqpen', cat: 'Fights' },
+        { name: 'Queen', url: 'https://turbowarp.org/604681896/fullscreen?hqpen', cat: 'Fights' },
+        { name: 'Spamton NEO', url: 'https://turbowarp.org/572344262/fullscreen?hqpen', cat: 'Fights' },
+        { name: 'Jevil', url: 'https://turbowarp.org/600739641/fullscreen?hqpen', cat: 'Fights' },
+        { name: 'Roaring Knight', url: 'https://turbowarp.org/1189208954/fullscreen?hqpen', cat: 'Fights' },
+        { name: 'Lightners Live', url: 'https://ezioeagle.itch.io/lightners-live-plus', cat: 'Fights' }
       ];
+
+      // Categoria selecionada para o sorteio (padrão: Todos)
+      let activeCategory = 'Todos';
+      const categoryBar = document.getElementById('slotCategoryBar');
+      if (categoryBar) {
+        categoryBar.querySelectorAll('.slot-category-btn').forEach((btn) => {
+          btn.addEventListener('click', () => {
+            activeCategory = btn.dataset.slotCat;
+            categoryBar.querySelectorAll('.slot-category-btn').forEach((b) => b.classList.remove('is-active'));
+            btn.classList.add('is-active');
+          });
+        });
+      }
+
+      function getFilteredLinks() {
+        if (activeCategory === 'Todos') return slotLinks;
+        return slotLinks.filter((l) => l.cat === activeCategory);
+      }
 
       let spinning = false;
 
@@ -1699,7 +1758,8 @@
           resultLabel.textContent = 'GIRANDO...';
         }
 
-        const chosen = slotLinks[Math.floor(Math.random() * slotLinks.length)];
+        const pool = getFilteredLinks();
+        const chosen = pool[Math.floor(Math.random() * pool.length)];
 
         Promise.all([
           spinReel(reels[0], 650),
