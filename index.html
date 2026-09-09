@@ -1302,7 +1302,6 @@
 
     function openRevealTab(imgPath) {
       const imgUrl = new URL(imgPath || 'assets/background02.png', document.baseURI).href;
-      const audioUrl = new URL('assets/brownoise.mp3', document.baseURI).href;
       const html = '<!doctype html><html><head><meta charset="utf-8"><title>.</title>' +
         '<style>html,body{margin:0;background:#000;height:100%;display:flex;align-items:center;justify-content:center;flex-direction:column;}' +
         'img{display:block;max-height:75vh;max-width:85vw;width:auto;height:auto;user-select:none;}' +
@@ -1310,19 +1309,29 @@
         '</head><body>' +
         '<img src="' + imgUrl + '" alt="" draggable="false" />' +
         '<p>01010110 01101111 01101100 01110100 01100101 00100000 01100101 01101101 00100000 01100010 01110010 01100101 01110110 01100101 00101110 00101110 00101110</p>' +
-        '<audio id="revealNoise" src="' + audioUrl + '" loop autoplay></audio>' +
-        '<script>(function(){' +
-          'var a=document.getElementById("revealNoise");' +
-          'a.play().catch(function(){' +
-            "document.addEventListener('click', function(){ a.play(); }, { once: true });" +
-          '});' +
-        '})();</' + 'script>' +
         '</body></html>';
 
       const w = window.open('', '_blank');
       if (!w) return; // navegador bloqueou o popup (pode acontecer, já que não é mais aberto no gesto do Enter)
       w.document.write(html);
       w.document.close();
+
+      // Toca o barulho na PRÓPRIA aba principal (mesmo esquema do bg-audio),
+      // já que aqui a permissão de autoplay já costuma estar liberada pela
+      // interação do usuário com o jogo. Some junto quando a aba nova fecha.
+      const noise = document.getElementById('revealNoise');
+      if (noise) {
+        noise.play().catch(function () {
+          document.addEventListener('click', function () { noise.play(); }, { once: true });
+        });
+        const watchClosed = setInterval(function () {
+          if (w.closed) {
+            noise.pause();
+            noise.currentTime = 0;
+            clearInterval(watchClosed);
+          }
+        }, 500);
+      }
     }
 
     function startSnakeGame() {
@@ -1875,6 +1884,7 @@
 </div>
 
 <audio id="bg-audio" src="assets/audio/birdsslowed.mp3" loop preload="auto"></audio>
+<audio id="revealNoise" src="assets/brownoise.mp3" loop preload="auto"></audio>
 
 <script>
   const audio = document.getElementById('bg-audio');
