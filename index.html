@@ -257,7 +257,7 @@
     }
     .neon-btn:hover::before { left: 160%; }
 
-    /* --- Slot Machine --- */
+    /* --- Slot Machine (card "Em Breve") --- */
     .slot-machine-wrap {
       position: relative;
       width: 100%; height: 100%;
@@ -786,6 +786,15 @@
       <div id="snakeScreen" style="position:absolute;left:12.3%;top:11.5%;width:73.8%;height:54.3%;display:none;overflow:hidden;border-radius:2%;">
         <canvas id="snakeCanvas" width="384" height="288" style="display:block;width:100%;height:100%;image-rendering:pixelated;"></canvas>
       </div>
+
+      <!-- Tela do "Sr. Max" (secret MAX) — mesmo recorte do CRT -->
+      <div id="maxScreen" style="position:absolute;left:12.3%;top:11.5%;width:73.8%;height:54.3%;display:none;overflow:hidden;border-radius:2%;background:#000;">
+        <button id="maxPrev" type="button" aria-label="Texto anterior" style="position:absolute;left:1.5%;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#00ff6a;font-size:clamp(18px,3.2vw,30px);line-height:1;cursor:pointer;padding:6px 8px;text-shadow:0 0 8px rgba(0,255,100,0.85);z-index:2;visibility:hidden;">‹</button>
+        <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;padding:9% 13%;box-sizing:border-box;">
+          <p id="maxText" style="margin:0;color:#00ff6a;font-family:'Courier New',monospace;text-align:center;line-height:1.55;letter-spacing:0.3px;white-space:pre-wrap;word-break:break-word;text-shadow:0 0 6px rgba(0,255,100,0.55);"></p>
+        </div>
+        <button id="maxNext" type="button" aria-label="Próximo texto" style="position:absolute;right:1.5%;top:50%;transform:translateY(-50%);background:transparent;border:none;color:#00ff6a;font-size:clamp(18px,3.2vw,30px);line-height:1;cursor:pointer;padding:6px 8px;text-shadow:0 0 8px rgba(0,255,100,0.85);z-index:2;">›</button>
+      </div>
     </div>
   </div>
 
@@ -1200,10 +1209,86 @@
             culpa.style.transition = 'opacity 0.6s';
             requestAnimationFrame(() => { culpa.style.opacity = '1'; });
           }
+        } else if (normalized === 'max') {
+          startMaxSequence();
         } else {
           pcHint.style.opacity = '0';
         }
       });
+    });
+
+    // ── SEQUÊNCIA SECRETA "MAX" ──
+    // Renderizada dentro da mesma "tela" do CRT (recorte da pc.png).
+    window.maxSequenceActive = false;
+    window.maxIndex = 0;
+    const maxTexts = [
+`𝙰𝚁𝚀𝚄𝙸𝚅𝙾 𝚁𝙴𝙲𝚄𝙿𝙴𝚁𝙰𝙳𝙾: 𝚂𝙸𝚂𝚃𝙴𝙼𝙰 𝙸𝙽𝚃𝙴𝚁𝙽𝙾 𝙼𝙰𝙲𝙾𝙲 𝚇. 𝚂𝚈𝙽𝙲 𝙳𝙸𝚁𝙴𝚃𝙾́𝚁𝙸𝙾: /𝚞𝚜𝚞𝚊𝚛𝚒𝚘𝚜/𝚊𝚍𝚖𝚒𝚗_𝚡𝚖/𝚗𝚘𝚝𝚊𝚜_𝚙𝚎𝚜𝚜𝚘𝚊𝚒𝚜/𝚌𝚛𝚒𝚙𝚝𝚘𝚐𝚛𝚊𝚏𝚊𝚍𝚘 𝙲𝙻𝙰𝚂𝚂𝙸𝙵𝙸𝙲𝙰𝙲̧𝙰̃𝙾 𝙳𝙾 𝙰𝚁𝚀𝚄𝙸𝚅𝙾: 𝙻𝙾𝙶 𝙿𝙴𝚂𝚂𝙾𝙰𝙻 — 𝙽𝙰̃𝙾 𝙰𝚄𝚃𝙾𝚁𝙸𝚉𝙰𝙳𝙾 𝙳𝙰𝚃𝙰 𝙳𝙴 𝙼𝙾𝙳𝙸𝙵𝙸𝙲𝙰𝙲̧𝙰̃𝙾: [𝙳𝙰𝙳𝙾𝚂 𝙲𝙾𝚁𝚁𝙾𝙼𝙿𝙸𝙳𝙾𝚂]`,
+`𝙴𝚕𝚎𝚜 𝚊𝚌𝚑𝚊𝚖 𝚚𝚞𝚎 𝚘 𝚂𝚛. 𝙼𝚊𝚡 𝚎́ 𝚊𝚙𝚎𝚗𝚊𝚜 𝚘 𝙲𝙴𝙾, 𝚞𝚖 𝚒𝚗𝚟𝚎𝚜𝚝𝚒𝚍𝚘𝚛 𝚏𝚊𝚗𝚝𝚊̃𝚘 𝚚𝚞𝚎 𝚊𝚜𝚜𝚒𝚗𝚊 𝚘𝚜 𝚌𝚑𝚎𝚚𝚞𝚎𝚜 𝚎 𝚐𝚊𝚛𝚊𝚗𝚝𝚎 𝚚𝚞𝚎 𝚘 𝙼𝚊𝚌𝚘𝚌𝚘'𝚜 𝙻𝚘𝚋𝚋𝚢 𝚌𝚘𝚗𝚝𝚒𝚗𝚞𝚎 𝚗𝚘 𝚊𝚛. 𝙼𝚊𝚜 𝚚𝚞𝚎𝚖 𝚝𝚛𝚊𝚋𝚊𝚕𝚑𝚊 𝚗𝚘 𝚜𝚞𝚋𝚜𝚘𝚕𝚘, 𝚗𝚘 𝚗𝚞́𝚌𝚕𝚎𝚘 𝚍𝚎 𝚍𝚎𝚜𝚎𝚗𝚟𝚘𝚕𝚟𝚒𝚖𝚎𝚗𝚝𝚘 𝚍𝚘 𝙼𝙲𝟶𝟽, 𝚜𝚊𝚋𝚎 𝚚𝚞𝚎 𝚑𝚊́ 𝚊𝚕𝚐𝚘 𝚍𝚎 𝚖𝚞𝚒𝚝𝚘 𝚎𝚛𝚛𝚊𝚍𝚘 𝚌𝚘𝚖 𝚎𝚕𝚎.`,
+`𝙽𝚒𝚗𝚐𝚞𝚎́𝚖 𝚜𝚊𝚋𝚎 𝚜𝚎𝚞 𝚗𝚘𝚖𝚎 𝚌𝚘𝚖𝚙𝚕𝚎𝚝𝚘 𝚘𝚞 𝚍𝚎 𝚘𝚗𝚍𝚎 𝚎𝚕𝚎 𝚛𝚎𝚊𝚕𝚖𝚎𝚗𝚝𝚎 𝚟𝚎𝚒𝚘. 𝙴𝚞 𝚟𝚒 𝚘𝚜 𝚟𝚎𝚕𝚑𝚘𝚜 𝚛𝚎𝚕𝚊𝚝𝚘́𝚛𝚒𝚘𝚜 𝚍𝚊 𝙶𝚞𝚎𝚛𝚛𝚊 𝙵𝚛𝚒𝚊. 𝙾 𝚊𝚌𝚘𝚛𝚍𝚘 𝚌𝚘𝚖 𝚘𝚜 𝚛𝚞𝚜𝚜𝚘𝚜 𝚊𝚙𝚘́𝚜 𝚘 𝚂𝚙𝚞𝚝𝚗𝚒𝚔 𝟷, 𝚎𝚖 𝟷𝟿𝟻𝟽, 𝚓𝚊́ 𝚌𝚒𝚝𝚊𝚟𝚊 𝚘 "𝚂𝚎𝚗𝚑𝚘𝚛 𝙼𝚊́𝚡𝚒𝚖𝚘". 𝙵𝚊𝚌̧𝚊 𝚊𝚜 𝚌𝚘𝚗𝚝𝚊𝚜. 𝙴𝚛𝚊 𝚙𝚊𝚛𝚊 𝚎𝚕𝚎 𝚜𝚎𝚛 𝚞𝚖 𝚑𝚘𝚖𝚎𝚖 𝚍𝚎 𝚒𝚍𝚊𝚍𝚎 𝚖𝚞𝚒𝚝𝚘 𝚊𝚟𝚊𝚗𝚌̧𝚊𝚍𝚊, 𝚖𝚊𝚜 𝚘 𝚒𝚗𝚍𝚒́𝚟𝚒́𝚍𝚞𝚘 𝚚𝚞𝚎 𝚍𝚎𝚜𝚌𝚎 𝚊𝚝𝚎́ 𝚊 𝚜𝚊𝚕𝚊 𝚍𝚘𝚜 𝚜𝚎𝚛𝚟𝚒𝚍𝚘𝚛𝚎𝚜 𝚙𝚊𝚛𝚊 𝚒𝚗𝚜𝚙𝚎𝚌𝚒𝚘𝚗𝚊𝚛 𝚘 𝚙𝚛𝚘𝚝𝚘́𝚝𝚒𝚙𝚘 𝚍𝚘 𝚌𝚘́𝚍𝚒𝚐𝚘 𝚍𝚊 𝚟𝚎𝚛𝚜𝚊̃𝚘 𝚅𝟻 𝚗𝚊̃𝚘 𝚊𝚙𝚊𝚛𝚎𝚗𝚝𝚊 𝚝𝚎𝚛 𝚖𝚊𝚒𝚜 𝚚𝚞𝚎 𝟺𝟻 𝚊𝚗𝚘𝚜. 𝙴𝚕𝚎 𝚗𝚊̃𝚘 𝚝𝚎𝚖 𝚛𝚞𝚐𝚊𝚜 𝚍𝚎 𝚎𝚡𝚙𝚛𝚎𝚜𝚜𝚊̃𝚘, 𝚗𝚞𝚗𝚌𝚊 𝚙𝚒𝚜𝚌𝚊 𝚚𝚞𝚊𝚗𝚍𝚘 𝚏𝚊𝚕𝚊 𝚌𝚘𝚖 𝚟𝚘𝚌𝚎̂ 𝚎 𝚗𝚊̃𝚘 𝚙𝚛𝚎𝚌𝚒𝚜𝚊 𝚘𝚕𝚑𝚊𝚛 𝚙𝚊𝚛𝚊 𝚘𝚜 𝚖𝚘𝚗𝚒𝚝𝚘𝚛𝚎𝚜 𝚙𝚊𝚛𝚊 𝚜𝚊𝚋𝚎𝚛 𝚜𝚎 𝚊 𝚕𝚒𝚗𝚐𝚞𝚊𝚐𝚎𝚖 𝚎𝚜𝚝𝚊́ 𝚛𝚘𝚍𝚊𝚗𝚍𝚘. 𝙴𝚕𝚎 𝚘𝚕𝚑𝚊 𝚙𝚊𝚛𝚊 𝚗𝚘́𝚜. 𝙲𝚘𝚖𝚘 𝚜𝚎 𝚙𝚞𝚍𝚎𝚜𝚜𝚎 𝚕𝚎𝚛 𝚘 𝚗𝚘𝚜𝚜𝚘 "𝚌𝚘́𝚍𝚒𝚐𝚘-𝚏𝚘𝚗𝚝𝚎".`,
+`𝙾𝚜 𝚟𝚎𝚝𝚎𝚛𝚊𝚗𝚘𝚜 𝚍𝚊 𝚎𝚖𝚙𝚛𝚎𝚜𝚊 𝚝𝚎̂𝚖 𝚙𝚊𝚟𝚘𝚛 𝚍𝚎𝚕𝚎. 𝙴 𝚊𝚐𝚘𝚛𝚊 𝚎𝚞 𝚎𝚗𝚝𝚎𝚗𝚍𝚘 𝚘 𝚙𝚘𝚛𝚚𝚞𝚎̂.`,
+`𝙾𝚗𝚝𝚎𝚖 𝚊̀ 𝚗𝚘𝚒𝚝𝚎, 𝚏𝚒𝚚𝚞𝚎𝚒 𝚊𝚝𝚎́ 𝚍𝚎 𝚖𝚊𝚍𝚛𝚞𝚐𝚊𝚍𝚊 𝚝𝚎𝚗𝚝𝚊𝚗𝚍𝚘 𝚎𝚜𝚝𝚊𝚋𝚒𝚕𝚒𝚣𝚊𝚛 𝚊 𝚝𝚊𝚡𝚊 𝚍𝚎 𝚝𝚛𝚊𝚗𝚜𝚏𝚎𝚛𝚎̂𝚗𝚌𝚒𝚊 𝚍𝚊 𝚅𝟻 𝚎 𝚙𝚛𝚎𝚌𝚒𝚜𝚎𝚒 𝚍𝚎𝚜𝚌𝚎𝚛 𝚊𝚘𝚜 𝚊𝚛𝚚𝚞𝚒𝚟𝚘𝚜 𝚖𝚘𝚛𝚝𝚘𝚜 𝚙𝚊𝚛𝚊 𝚋𝚞𝚜𝚌𝚊𝚛 𝚘𝚜 𝚛𝚎𝚕𝚊𝚝𝚘́𝚛𝚒𝚘𝚜 𝚊𝚗𝚊𝚕𝚘́𝚐𝚒𝚌𝚘𝚜 𝚍𝚘 "𝙻𝚒𝚝𝚝𝚕𝚎 𝙼𝚘𝚗𝚔𝚎𝚢". 𝙵𝚘𝚒 𝚚𝚞𝚊𝚗𝚍𝚘 𝚘𝚞𝚟𝚒 𝚟𝚘𝚣𝚎𝚜 𝚗𝚘 𝚌𝚘𝚛𝚛𝚎𝚍𝚘𝚛 𝚕𝚎𝚜𝚝𝚎.`,
+`𝙴𝚛𝚊𝚖 𝚘 𝚂𝚛. 𝙼𝚊𝚡 𝚎 𝚘 𝙳𝚛. 𝙵𝚎𝚕𝚔𝚜, 𝚞𝚖 𝚍𝚘𝚜 𝚙𝚎𝚜𝚚𝚞𝚒𝚜𝚊𝚍𝚘𝚛𝚎𝚜 𝚘𝚛𝚒𝚐𝚒𝚗𝚊𝚒𝚜 𝚍𝚘𝚜 𝚝𝚎𝚜𝚝𝚎𝚜 𝚎𝚖 𝚊𝚗𝚒𝚖𝚊𝚒𝚜 𝚍𝚘𝚜 𝚊𝚗𝚘𝚜 𝟼𝟶. 𝙾 𝙳𝚘𝚞𝚝𝚘𝚛 𝚎𝚜𝚝𝚊𝚟𝚊 𝚍𝚎 𝚓𝚘𝚎𝚕𝚑𝚘𝚜, 𝚊𝚘𝚜 𝚙𝚛𝚊𝚗𝚝𝚘𝚜, 𝚙𝚞𝚡𝚊𝚗𝚍𝚘 𝚘𝚜 𝚙𝚛𝚘́𝚙𝚛𝚒𝚘𝚜 𝚌𝚊𝚋𝚎𝚕𝚘𝚜. 𝙴𝚕𝚎 𝚐𝚛𝚒𝚝𝚊𝚟𝚊, 𝚍𝚎𝚜𝚎𝚜𝚙𝚎𝚛𝚊𝚍𝚘: "𝙿𝚘𝚛 𝚏𝚊𝚟𝚘𝚛, 𝙼𝚊𝚡. 𝙰 𝚖𝚒𝚗𝚑𝚊 𝚏𝚒𝚕𝚑𝚊... 𝚎𝚞 𝚗𝚊̃𝚘 𝚌𝚘𝚗𝚜𝚒𝚐𝚘 𝚕𝚎𝚖𝚋𝚛𝚊𝚛 𝚍𝚘 𝚛𝚘𝚜𝚝𝚘 𝚍𝚎𝚕𝚊! 𝚀𝚞𝚊𝚗𝚍𝚘 𝚎𝚞 𝚏𝚎𝚌𝚑𝚘 𝚘𝚜 𝚘𝚕𝚑𝚘𝚜, 𝚝𝚞𝚍𝚘 𝚚𝚞𝚎 𝚎𝚞 𝚟𝚎𝚓𝚘 𝚎́ 𝚊𝚚𝚞𝚎𝚕𝚎 𝚖𝚊𝚕𝚍𝚒𝚝𝚘 𝚙𝚛𝚒𝚖𝚊𝚝𝚊 𝚙𝚛𝚊𝚝𝚎𝚊𝚍𝚘 𝚎 𝚊𝚜 𝚊𝚐𝚞𝚕𝚑𝚊𝚜 𝚍𝚘 𝚙𝚛𝚘𝚝𝚘́𝚝𝚒𝚙𝚘 𝚅𝟹. 𝙼𝚎 𝚍𝚎𝚟𝚘𝚕𝚟𝚊 𝚊𝚜 𝚖𝚒𝚗𝚑𝚊𝚜 𝚕𝚎𝚖𝚋𝚛𝚊𝚗𝚌̧𝚊𝚜! 𝙼𝚎 𝚍𝚎𝚟𝚘𝚕𝚟𝚊 𝚊 𝚖𝚒𝚗𝚑𝚊 𝚟𝚒𝚍𝚊!"`,
+`𝙾 𝚂𝚛. 𝙼𝚊𝚡 𝚗𝚊̃𝚘 𝚎𝚜𝚋𝚘𝚌̧𝚘𝚞 𝚞𝚖𝚊 𝚞́𝚗𝚒𝚌𝚊 𝚛𝚎𝚊𝚌̧𝚊̃𝚘 𝚑𝚞𝚖𝚊𝚗𝚊. 𝙴𝚕𝚎 𝚌𝚊𝚖𝚒𝚗𝚑𝚘𝚞 𝚊𝚝𝚎́ 𝚘 𝙳𝚘𝚞𝚝𝚘𝚛, 𝚌𝚘𝚕𝚘𝚌𝚘𝚞 𝚊 𝚖𝚊̃𝚘 𝚏𝚛𝚒𝚊 𝚜𝚘𝚋𝚛𝚎 𝚊 𝚝𝚎𝚜𝚝𝚊 𝚍𝚎𝚕𝚎 𝚎 𝚌𝚘𝚖𝚎𝚌̧𝚘𝚞 𝚊 𝚜𝚞𝚜𝚜𝚞𝚛𝚛𝚊𝚛.`,
+`𝙽𝚊̃𝚘 𝚎𝚛𝚊 𝚙𝚘𝚛𝚝𝚞𝚐𝚞𝚎̂𝚜, 𝚗𝚊̃𝚘 𝚎𝚛𝚊 𝚛𝚞𝚜𝚜𝚘. 𝙴𝚛𝚊 𝚞𝚖 𝚣𝚞𝚖𝚋𝚒𝚍𝚘 𝚐𝚞𝚝𝚞𝚛𝚊𝚕, 𝚞𝚖𝚊 𝚜𝚎𝚚𝚞𝚎̂𝚗𝚌𝚒𝚊 𝚍𝚎 𝚌𝚕𝚒𝚚𝚞𝚎𝚜 𝚎 𝚝𝚘𝚗𝚜 𝚝𝚘𝚗𝚊𝚒𝚜 𝚛𝚒́𝚝𝚖𝚒𝚌𝚘𝚜. 𝙴𝚕𝚎 𝚎𝚜𝚝𝚊𝚟𝚊 𝚟𝚘𝚌𝚊𝚕𝚒𝚣𝚊𝚗𝚍𝚘 𝚊𝚜 𝚏𝚛𝚎𝚚𝚞𝚎̂𝚗𝚌𝚒𝚊𝚜 𝚍𝚊 𝚕𝚒𝚗𝚐𝚞𝚊𝚐𝚎𝚖 𝚅𝟺 𝚙𝚞𝚛𝚊. 𝚂𝚎𝚖 𝚙𝚊𝚜𝚜𝚊𝚛 𝚙𝚎𝚕𝚘 𝚜𝚒𝚝𝚎, 𝚜𝚎𝚖 𝚌𝚘𝚍𝚒𝚏𝚒𝚌𝚊𝚌̧𝚊̃𝚘. 𝚂𝚘𝚖𝚎𝚗𝚝𝚎 𝚘 𝚛𝚞𝚒́𝚍𝚘 𝚌𝚛𝚞.`,
+`𝙴𝚞 𝚓𝚞𝚛𝚘 𝚙𝚘𝚛 𝚝𝚞𝚍𝚘 𝚚𝚞𝚎 𝚎́ 𝚖𝚊𝚒𝚜 𝚜𝚊𝚐𝚛𝚊𝚍𝚘, 𝚎𝚞 𝚟𝚒 𝚘𝚜 𝚘𝚕𝚑𝚘𝚜 𝚍𝚘 𝙳𝚘𝚞𝚝𝚘𝚛 𝙵𝚎𝚕𝚔𝚜 𝚏𝚒𝚌𝚊𝚛𝚎𝚖 𝚘𝚙𝚊𝚌𝚘𝚜 𝚗𝚊 𝚖𝚎𝚜𝚖𝚊 𝚑𝚘𝚛𝚊. 𝙾 𝚍𝚎𝚜𝚎𝚜𝚙𝚎𝚛𝚘 𝚜𝚞𝚖𝚒𝚞 𝚍𝚘 𝚛𝚘𝚜𝚝𝚘 𝚍𝚎𝚕𝚎 𝚌𝚘𝚖𝚘 𝚜𝚎 𝚊𝚕𝚐𝚞𝚎́𝚖 𝚝𝚒𝚟𝚎𝚜𝚜𝚎 𝚙𝚞𝚡𝚊𝚍𝚘 𝚞𝚖 𝚌𝚊𝚋𝚘 𝚍𝚊 𝚝𝚘𝚖𝚊𝚍𝚊. 𝚄𝚖 𝚜𝚘𝚛𝚛𝚒𝚜𝚘 𝚟𝚊𝚣𝚒𝚘, 𝚍𝚘𝚕𝚘𝚛𝚘𝚜𝚊𝚖𝚎𝚗𝚝𝚎 𝚊𝚛𝚝𝚒𝚏𝚒𝚌𝚒𝚊𝚕, 𝚜𝚎 𝚊𝚋𝚛𝚒𝚞 𝚕𝚎𝚗𝚝𝚊𝚖𝚎𝚗𝚝𝚎. 𝙴𝚕𝚎 𝚜𝚎 𝚕𝚎𝚟𝚊𝚗𝚝𝚘𝚞, 𝚊𝚛𝚛𝚞𝚖𝚘𝚞 𝚘 𝚓𝚊𝚕𝚎𝚌𝚘 𝚎, 𝚌𝚘𝚖 𝚞𝚖𝚊 𝚟𝚘𝚣 𝚛𝚘𝚋𝚘́𝚝𝚒𝚌𝚊 𝚎 𝚜𝚎𝚛𝚎𝚗𝚊, 𝚍𝚒𝚜𝚜𝚎: "𝙾𝚋𝚛𝚒𝚐𝚊𝚍𝚘, 𝚂𝚛. 𝙼𝚊𝚡. 𝙰 𝚟𝚒𝚊𝚐𝚎𝚖 𝚙𝚊𝚛𝚊 𝚊 𝚙𝚛𝚊𝚒𝚊 𝚌𝚘𝚖 𝚊 𝚖𝚒𝚗𝚑𝚊 𝚏𝚊𝚖𝚒́𝚕𝚒𝚊 𝚗𝚘 𝚞́𝚕𝚝𝚒𝚖𝚘 𝚍𝚘𝚖𝚒𝚗𝚐𝚘 𝚏𝚘𝚒 𝚛𝚎𝚊𝚕𝚖𝚎𝚗𝚝𝚎 𝚏𝚘𝚛𝚖𝚒𝚍𝚊́𝚟𝚎𝚕. 𝙾 𝚌𝚑𝚎𝚒𝚛𝚘 𝚍𝚘 𝚖𝚊𝚛 𝚎𝚜𝚝𝚊𝚟𝚊 𝚘́𝚝𝚒𝚖𝚘."`,
+`𝙾 𝙳𝚘𝚞𝚝𝚘𝚛 𝙵𝚎𝚕𝚔𝚜 𝚗𝚊̃𝚘 𝚝𝚎𝚖 𝚏𝚊𝚖𝚒́𝚕𝚒𝚊. 𝙴𝚕𝚎 𝚎́ 𝚜𝚘𝚕𝚝𝚎𝚒𝚛𝚘 𝚎 𝚗𝚊̃𝚘 𝚜𝚊𝚒 𝚍𝚊 𝚎𝚖𝚙𝚛𝚎𝚜𝚊 𝚑𝚊́ 𝚟𝚒𝚗𝚝𝚎 𝚊𝚗𝚘𝚜. 𝙰 𝚏𝚒𝚕𝚑𝚊 𝚚𝚞𝚎 𝚎𝚕𝚎 𝚌𝚑𝚘𝚛𝚊𝚟𝚊 𝚊 𝚙𝚎𝚛𝚍𝚊 𝚎𝚛𝚊 𝚞𝚖𝚊 𝚊𝚗𝚘𝚖𝚊𝚕𝚒𝚊 𝚌𝚊𝚞𝚜𝚊𝚍𝚊 𝚙𝚎𝚕𝚊 𝚎𝚡𝚙𝚘𝚜𝚒𝚌̧𝚊̃𝚘 𝚙𝚛𝚘𝚕𝚘𝚗𝚐𝚊𝚍𝚊 𝚊𝚘𝚜 𝚜𝚎𝚛𝚟𝚒𝚍𝚘𝚛𝚎𝚜, 𝚎 𝚊 𝚟𝚒𝚊𝚐𝚎𝚖 𝚙𝚊𝚛𝚊 𝚊 𝚙𝚛𝚊𝚒𝚊 𝚏𝚘𝚒 𝚘 "𝚙𝚊𝚝𝚌𝚑" 𝚍𝚎 𝚌𝚘𝚛𝚛𝚎𝚌̧𝚊̃𝚘 𝚚𝚞𝚎 𝚘 𝚂𝚛. 𝙼𝚊𝚡 𝚊𝚌𝚊𝚋𝚘𝚞 𝚍𝚎 𝚒𝚗𝚜𝚝𝚊𝚕𝚊𝚛 𝚗𝚊 𝚌𝚊𝚋𝚎𝚌̧𝚊 𝚍𝚎𝚕𝚎.`,
+`𝙴́ 𝚒𝚜𝚜𝚘 𝚚𝚞𝚎 𝚘 𝙼𝙲𝟶𝟽 𝚜𝚒𝚐𝚗𝚒𝚏𝚒𝚌𝚊. 𝚀𝚞𝚊𝚗𝚍𝚘 𝚊 "𝚝𝚛𝚊𝚗𝚜𝚏𝚞𝚜𝚊̃𝚘" 𝚗𝚘𝚜 𝚞𝚜𝚞𝚊́𝚛𝚒𝚘𝚜 𝚏𝚘𝚛 𝚌𝚘𝚗𝚌𝚕𝚞𝚒́𝚍𝚊 𝚊𝚝𝚛𝚊𝚟𝚎́𝚜 𝚍𝚘 𝙼𝚊𝚌𝚘𝚌𝚘'𝚜 𝙻𝚘𝚋𝚋𝚢, 𝚘 𝚖𝚞𝚗𝚍𝚘 𝚒𝚗𝚝𝚎𝚒𝚛𝚘 𝚜𝚎𝚛𝚊́ 𝚌𝚘𝚖𝚘 𝚘 𝙳𝚘𝚞𝚝𝚘𝚛 𝙵𝚎𝚕𝚔𝚜.`,
+`𝙾 𝚂𝚛. 𝙼𝚊𝚡 𝚗𝚊̃𝚘 𝚏𝚘𝚒 𝚊𝚙𝚎𝚗𝚊𝚜 𝚘 𝚏𝚒𝚗𝚊𝚗𝚌𝚒𝚊𝚍𝚘𝚛 𝚍𝚘 𝙿𝚛𝚘𝚓𝚎𝚝𝚘 𝙻𝚒𝚝𝚝𝚕𝚎 𝙼𝚘𝚗𝚔𝚎𝚢. 𝙴𝚞 𝚌𝚘𝚖𝚎𝚌̧𝚘 𝚊 𝚍𝚎𝚜𝚌𝚘𝚗𝚏𝚒𝚊𝚛 𝚚𝚞𝚎 𝚎𝚕𝚎 𝚏𝚘𝚒 𝚘 𝚙𝚊𝚌𝚒𝚎𝚗𝚝𝚎 𝚣𝚎𝚛𝚘.`,
+`𝙴𝚞 𝚗𝚊̃𝚘 𝚟𝚘𝚞 𝚍𝚎𝚒𝚡𝚊𝚛 𝚒𝚜𝚜𝚘 𝚊𝚌𝚘𝚗𝚝𝚎𝚌𝚎𝚛. 𝙼𝚒𝚗𝚑𝚊𝚜 𝚙𝚛𝚘́𝚙𝚛𝚒𝚊𝚜 𝚖𝚎𝚖𝚘́𝚛𝚒𝚊𝚜 𝚍𝚎 𝚒𝚗𝚏𝚊̂𝚗𝚌𝚒𝚊 𝚎𝚜𝚝𝚊̃𝚘 𝚌𝚘𝚖𝚎𝚌̧𝚊𝚗𝚍𝚘 𝚊 𝚝𝚎𝚛 𝚊𝚚𝚞𝚎𝚕𝚊 𝚎𝚜𝚝𝚊́𝚝𝚒𝚌𝚊, 𝚊𝚚𝚞𝚎𝚕𝚊 𝚖𝚎𝚜𝚖𝚊 𝚝𝚎𝚡𝚝𝚞𝚛𝚊 𝚍𝚘𝚜 𝚓𝚘𝚐𝚘𝚜 𝚍𝚘 𝚜𝚒𝚝𝚎. 𝚂𝚎 𝚎𝚞 𝚗𝚊̃𝚘 𝚏𝚒𝚣𝚎𝚛 𝚘 𝚞𝚙𝚕𝚘𝚊𝚍 𝚍𝚘 𝚌𝚘́𝚍𝚒𝚐𝚘 "𝙳𝟹 𝙹𝟷𝟷.𝟺" 𝚎 𝚟𝚊𝚣𝚊𝚛 𝚊 𝚟𝚎𝚛𝚍𝚊𝚍𝚎 𝚊𝚐𝚘𝚛𝚊, 𝚊𝚖𝚊𝚗𝚑𝚊̃ 𝚘 𝚂𝚛. 𝙼𝚊𝚡 𝚙𝚘𝚍𝚎 𝚜𝚞𝚜𝚜𝚞𝚛𝚛𝚊𝚛 𝚗𝚘 𝚖𝚎𝚞 𝚘𝚞𝚟𝚒𝚍𝚘, 𝚎 𝚎𝚞 𝚎𝚜𝚚𝚞𝚎𝚌𝚎𝚛𝚎𝚒 𝚚𝚞𝚎 𝚞𝚖 𝚍𝚒𝚊 𝚝𝚎𝚗𝚝𝚎𝚒 𝚒𝚖𝚙𝚎𝚍𝚒-𝚕𝚘.`,
+`𝙴𝚜𝚜𝚎 𝚙𝚘𝚍𝚎 𝚜𝚎𝚛 𝚖𝚎𝚞 𝚞́𝚕𝚝𝚒𝚖𝚘 𝚛𝚎𝚕𝚊𝚝𝚘́𝚛𝚒𝚘, 𝚊𝚝𝚎𝚗𝚌𝚒𝚘𝚜𝚊𝚖𝚎𝚗𝚝𝚎 - 𝚇𝙼`
+    ];
+
+    function fitMaxText(el) {
+      const container = el.parentElement;
+      let size = 16;
+      el.style.fontSize = size + 'px';
+      while (size > 7 && (el.scrollHeight > container.clientHeight || el.scrollWidth > container.clientWidth)) {
+        size -= 1;
+        el.style.fontSize = size + 'px';
+      }
+    }
+
+    function renderMaxText() {
+      const textEl = document.getElementById('maxText');
+      const prevBtn = document.getElementById('maxPrev');
+      const nextBtn = document.getElementById('maxNext');
+      if (!textEl) return;
+      textEl.textContent = maxTexts[window.maxIndex];
+      requestAnimationFrame(() => fitMaxText(textEl));
+      if (prevBtn) prevBtn.style.visibility = (window.maxIndex === 0) ? 'hidden' : 'visible';
+      if (nextBtn) nextBtn.style.visibility = (window.maxIndex === maxTexts.length - 1) ? 'hidden' : 'visible';
+    }
+
+    function startMaxSequence() {
+      const screen = document.getElementById('maxScreen');
+      const hintWrap = document.getElementById('pcHintWrap');
+      if (!screen) return;
+      if (hintWrap) hintWrap.style.opacity = '0';
+      screen.style.display = 'block';
+      window.maxSequenceActive = true;
+      window.maxIndex = 0;
+      renderMaxText();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+      const maxPrev = document.getElementById('maxPrev');
+      const maxNext = document.getElementById('maxNext');
+      if (maxPrev) {
+        maxPrev.addEventListener('click', function () {
+          if (window.maxIndex > 0) {
+            window.maxIndex -= 1;
+            renderMaxText();
+          }
+        });
+      }
+      if (maxNext) {
+        maxNext.addEventListener('click', function () {
+          if (window.maxIndex < maxTexts.length - 1) {
+            window.maxIndex += 1;
+            renderMaxText();
+          }
+        });
+      }
     });
 
     // ── SNAKE MINIGAME (secret 30/08) ──
